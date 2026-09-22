@@ -139,7 +139,7 @@ export default function App() {
   };
 
   const handlePayment = () => {
-    const amountToPay = paymentOption === 'self' ? 9000 : 11500;
+    const amountToPay = 5; // Temporary test amount
     
     const options = {
       key: 'rzp_live_TB3rEmMxTRUk03', // Live Razorpay API key
@@ -148,12 +148,12 @@ export default function App() {
       currency: 'INR',
       name: 'Indus Limited',
       description: 'Government Court Agreement Processing',
+      payment_capture: 1,
       handler: function (response: any) {
         setPaymentSuccessId(response.razorpay_payment_id);
       },
       prefill: {
         name: 'Milan Biswas',
-        email: 'milan.biswas@induslimited.com',
         contact: '9339492781'
       },
       theme: {
