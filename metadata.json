@@ -1,0 +1,6 @@
+{
+  "name": "Indus Limited",
+  "description": "Indus Limited official Access Portal for secure authentication and authorization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
