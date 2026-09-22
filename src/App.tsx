@@ -139,11 +139,11 @@ export default function App() {
   };
 
   const handlePayment = () => {
-    const amountToPay = 5; // Temporary test amount
+    const amountToPay = paymentOption === 'self' ? 9000 : 11500;
     
     const options = {
-      key: 'rzp_live_TB3rEmMxTRUk03', // Live Razorpay API key
-      secret: '93Vj6wg9qYMEeD27Z8EJ46Is', // Razorpay Secret key
+      key: 'rzp_test_Tf7VnvObroPCDv', // Test Razorpay API key
+      secret: 'DA0zOM3bGDHn6soWdt9Gzd90', // Razorpay Secret key
       amount: amountToPay * 100, // Razorpay works in paise (subunits)
       currency: 'INR',
       name: 'Indus Limited',
