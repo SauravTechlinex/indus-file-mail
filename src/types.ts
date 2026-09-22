@@ -48,7 +48,7 @@ export const OFFICIAL_REGISTRY: Record<string, VerifiedItem> = {
       'FSSAI Number': 'MD2026-7843-FASS-8890031 (verified and linked)',
       'Trade License': 'Verified and connected',
       'Agreement': 'Milan Biswas (verified)',
-      'Profit Transfer Method': 'Bank transfer',
+      'Profit Transfer Method': 'SBI bank transfer',
       'Documents': 'Aadhaar, PAN, Voter ID (verified)',
       'Address': 'Bagangram',
       'Coordinates': "Lat: 23.0000245'9900589 & Lon: 78'3489'0089'4455598"
