@@ -136,7 +136,6 @@ export default function App() {
     setUsernameInput('');
     setPasswordInput('');
     setSelectedItem(null);
-    setShowReportModal(true);
   };
 
   const handlePayment = () => {
