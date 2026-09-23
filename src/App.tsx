@@ -61,7 +61,7 @@ export default function App() {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const [activeSidebarTab, setActiveSidebarTab] = useState<'details' | 'cryptography' | 'routing' | 'owner' | 'payments' | 'team'>('owner');
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'team'>('info');
   const [paymentOption, setPaymentOption] = useState<'self' | 'outsource'>('self');
   const [paymentSuccessId, setPaymentSuccessId] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<VerifiedItem | null>(null);
@@ -349,7 +349,7 @@ export default function App() {
         ) : (
           <div className="flex flex-col md:flex-row w-full max-w-7xl mx-auto">
             {/* Premium Sidebar */}
-            <aside className="w-full md:w-64 flex flex-col gap-6 shrink-0 py-6 md:py-8 md:border-r border-slate-200 md:pr-8">
+            <aside className="hidden md:flex w-64 flex-col gap-6 shrink-0 py-8 border-r border-slate-200 pr-8">
               {/* User Profile Card */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
@@ -391,11 +391,19 @@ export default function App() {
                 <span className="text-[11px] font-bold text-slate-400/80 px-3 mb-2 block uppercase tracking-wider">Menu</span>
                 <button
                   type="button"
-                  onClick={() => setActiveSidebarTab('owner')}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'owner' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                  onClick={() => setActiveSidebarTab('info')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'info' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
                 >
                   <UserCheck className="w-4 h-4" />
-                  <span>Owner details</span>
+                  <span>Info</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveSidebarTab('document')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'document' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                >
+                  <FileCheck className="w-4 h-4" />
+                  <span>Document</span>
                 </button>
                 <button
                   type="button"
@@ -415,14 +423,6 @@ export default function App() {
                   <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
                     DUE
                   </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveSidebarTab('details')}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'details' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
-                >
-                  <Layers className="w-4 h-4" />
-                  <span>Overview</span>
                 </button>
                 <button
                   type="button"
@@ -470,47 +470,48 @@ export default function App() {
                       </p>
                     </div>
                   </div>
-                  {/* Premium Header Profile Overview */}
-                  <div className="border-b border-slate-200 pb-8 mb-4 flex flex-col gap-6">
-                    
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
-                      <div className="flex flex-col gap-2">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100 w-fit shadow-sm">
-                          <Check className="w-3.5 h-3.5" /> REGISTERED PROFILE
-                        </span>
-                        <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight mt-2">
-                          {selectedItem.name}
-                        </h2>
-                        <span className="text-slate-500 font-mono text-sm">
-                          ID: <span className="font-bold text-slate-700">{selectedItem.id}</span>
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-start md:items-end gap-1 text-sm font-semibold">
-                        <span className="text-slate-400 text-xs font-medium">Status</span>
-                        <span className="text-emerald-600 font-bold">{selectedItem.status}</span>
-                      </div>
-                    </div>
 
-                    <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-4 mt-4 pt-6 border-t border-slate-200/50">
-                      {Object.entries(selectedItem.specifications).slice(0, 4).map(([key, value], idx) => (
-                        <div key={idx} className="flex flex-col gap-1">
-                          <span className="text-xs font-medium text-slate-500">{key}</span>
-                          <span className="text-sm font-bold text-slate-800 truncate">{value}</span>
-                        </div>
-                      ))}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs font-medium text-slate-500">Estimated Opening Date</span>
-                        <span className="text-sm font-bold text-slate-800 truncate">Not yet disclosed.</span>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Tabbed Content Panel */}
                   <div className="flex flex-col gap-6">
-                    {activeSidebarTab === 'owner' && (
+                    {activeSidebarTab === 'info' && (
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Premium Header Profile Overview */}
+                        <div className="border-b border-slate-200 pb-8 mb-4 flex flex-col gap-6">
+                          
+                          <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                            <div className="flex flex-col gap-2">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100 w-fit shadow-sm">
+                                <Check className="w-3.5 h-3.5" /> REGISTERED PROFILE
+                              </span>
+                              <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight mt-2">
+                                {selectedItem.name}
+                              </h2>
+                              <span className="text-slate-500 font-mono text-sm">
+                                ID: <span className="font-bold text-slate-700">{selectedItem.id}</span>
+                              </span>
+                            </div>
+                            <div className="flex flex-col items-start md:items-end gap-1 text-sm font-semibold">
+                              <span className="text-slate-400 text-xs font-medium">Status</span>
+                              <span className="text-emerald-600 font-bold">{selectedItem.status}</span>
+                            </div>
+                          </div>
+
+                          <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-4 mt-4 pt-6 border-t border-slate-200/50">
+                            {Object.entries(selectedItem.specifications).slice(0, 4).map(([key, value], idx) => (
+                              <div key={idx} className="flex flex-col gap-1">
+                                <span className="text-xs font-medium text-slate-500">{key}</span>
+                                <span className="text-sm font-bold text-slate-800 truncate">{value}</span>
+                              </div>
+                            ))}
+                            <div className="flex flex-col gap-1">
+                              <span className="text-xs font-medium text-slate-500">Estimated Opening Date</span>
+                              <span className="text-sm font-bold text-slate-800 truncate">Not yet disclosed.</span>
+                            </div>
+                          </div>
+                        </div>
                         {/* Compact Process Tracker Section */}
-                        <div className="w-full bg-slate-50/50 rounded-2xl border border-slate-200/60 p-5 shadow-sm flex flex-col gap-4">
+                        <div className="w-full border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/50 pb-3">
                             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
                               <Layers className="w-4 h-4 text-emerald-600" />
@@ -559,11 +560,48 @@ export default function App() {
                             ['Company agreement', 'Verified'],
                             ['Government Court Agreement', 'Not yet started']
                           ].map(([key, value], idx) => (
-                            <div key={idx} className="flex flex-col gap-1 p-5 rounded-2xl bg-white/50 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                            <div key={idx} className="flex flex-col gap-1 py-4 border-b border-slate-100">
                               <span className="text-xs font-medium text-slate-500">{key}</span>
                               <span className="text-sm font-bold text-slate-800">{value}</span>
                             </div>
                           ))}
+                        </div>
+
+                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4 mt-6">
+                          <h3 className="text-lg font-display font-bold text-slate-900">Complete Specifications</h3>
+                          <button
+                            type="button"
+                            onClick={() => setShowCertificateView(true)}
+                            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-colors cursor-pointer bg-emerald-50/50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm"
+                          >
+                            <Printer className="w-4 h-4" />
+                            Print Warrant
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {Object.entries(selectedItem.specifications).map(([key, value], idx) => (
+                            <div key={idx} className="flex flex-col gap-1 py-4 border-b border-slate-100">
+                              <span className="text-xs font-medium text-slate-500">{key}</span>
+                              <span className="text-sm font-bold text-slate-800">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {activeSidebarTab === 'document' && (
+                      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
+                          <h3 className="text-lg font-display font-bold text-slate-900">Document Verification</h3>
+                        </div>
+                        <div className="flex flex-col items-center justify-center text-center py-10 px-4 border-b border-slate-100 pb-16">
+                          <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-emerald-50/50">
+                            <FileCheck className="w-10 h-10 text-emerald-600" />
+                          </div>
+                          <h2 className="text-2xl font-bold text-slate-800 mb-3">All Documents Verified</h2>
+                          <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
+                            Your submitted documents have been successfully reviewed and verified by the administration. Any necessary information or future updates regarding your paperwork will be visible here.
+                          </p>
                         </div>
                       </div>
                     )}
@@ -575,7 +613,7 @@ export default function App() {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                           {['Wasim Kha', 'Bir Sanyal', 'Koel Pande', 'Debashis Sarkar', 'Subrata Prajapati', 'Prasit Sanyal'].map((member, idx) => (
-                            <div key={idx} className="flex items-center gap-3 p-4 rounded-2xl bg-white/50 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
+                            <div key={idx} className="flex items-center gap-3 py-3 border-b border-slate-100">
                               <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
                                 {member.charAt(0)}
                               </div>
@@ -583,7 +621,7 @@ export default function App() {
                             </div>
                           ))}
                         </div>
-                        <div className="mt-2 p-4 bg-slate-50 rounded-2xl border border-slate-200/60 flex items-start gap-3">
+                        <div className="mt-4 py-4 flex items-start gap-3">
                           <Users className="w-5 h-5 text-slate-400 mt-0.5" />
                           <p className="text-sm text-slate-600 font-medium leading-relaxed">
                             <strong>Note:</strong> Additional team members will be allocated and added to this roster at a later stage as the project progresses.
@@ -603,8 +641,8 @@ export default function App() {
                         </div>
 
                         {/* Status Card */}
-                        <div className="bg-emerald-50/50 backdrop-blur-md border border-emerald-100/50 rounded-2xl p-6 flex flex-col gap-4 shadow-sm">
-                          <div className="flex items-center gap-2 text-emerald-800 font-bold text-lg border-b border-emerald-200/50 pb-3">
+                        <div className="border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
+                          <div className="flex items-center gap-2 text-emerald-800 font-bold text-lg">
                             <Check className="w-5 h-5 text-emerald-600" />
                             Bid Successfully Won
                           </div>
@@ -619,7 +657,7 @@ export default function App() {
                         </div>
 
                         {/* Refund Status Card */}
-                        <div className="bg-white/50 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm">
+                        <div className="border-b border-slate-200 pb-6 mb-2 flex flex-col gap-3">
                           <h4 className="text-xs font-bold text-slate-600 border-b border-slate-200/60 pb-2">Refund Status Tracker</h4>
                           <div className="flex flex-col gap-3 mt-1">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -657,13 +695,13 @@ export default function App() {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-white/60 backdrop-blur-md border border-slate-200/50 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
+                          <div className="pb-6 mb-2 flex flex-col gap-5">
                           <div className="flex flex-col gap-1">
                             <h4 className="text-base font-bold text-slate-800">Government Court Agreement Processing</h4>
                             <p className="text-sm text-slate-500 leading-relaxed">
                               To proceed, you must complete the government court procedures. Please select how you wish to process the agreement. The selected option will become active upon payment.
                             </p>
-                            <div className="bg-blue-50/50 border border-blue-100/50 p-3 rounded-xl flex items-start gap-3 mt-2 shadow-sm">
+                            <div className="bg-blue-50 p-4 rounded-lg flex items-start gap-3 mt-2">
                               <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                               <div className="flex flex-col gap-1">
                                 <p className="text-sm text-blue-800 font-medium leading-relaxed">
@@ -675,7 +713,7 @@ export default function App() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                             {/* Option 1: Self */}
-                            <label className={`relative flex flex-col p-5 cursor-pointer rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${paymentOption === 'self' ? 'border-[#007a3e] bg-emerald-50/50 shadow-md ring-2 ring-[#007a3e]/10' : 'border-slate-200/60 hover:border-emerald-300 hover:bg-white/80 bg-white/50 shadow-sm'}`}>
+                            <label className={`relative flex flex-col p-5 cursor-pointer rounded-lg border transition-all duration-200 ${paymentOption === 'self' ? 'border-[#007a3e] bg-emerald-50/30 ring-1 ring-[#007a3e]' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
                               <input 
                                 type="radio" 
                                 name="paymentOption" 
@@ -706,7 +744,7 @@ export default function App() {
                             </label>
 
                             {/* Option 2: Outsource */}
-                            <label className={`relative flex flex-col p-5 cursor-pointer rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${paymentOption === 'outsource' ? 'border-[#007a3e] bg-emerald-50/50 shadow-md ring-2 ring-[#007a3e]/10' : 'border-slate-200/60 hover:border-emerald-300 hover:bg-white/80 bg-white/50 shadow-sm'}`}>
+                            <label className={`relative flex flex-col p-5 cursor-pointer rounded-lg border transition-all duration-200 ${paymentOption === 'outsource' ? 'border-[#007a3e] bg-emerald-50/30 ring-1 ring-[#007a3e]' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
                               <input 
                                 type="radio" 
                                 name="paymentOption" 
@@ -765,29 +803,6 @@ export default function App() {
                       </div>
                     )}
 
-                    {activeSidebarTab === 'details' && (
-                      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
-                          <h3 className="text-lg font-display font-bold text-slate-900">Complete Specifications</h3>
-                          <button
-                            type="button"
-                            onClick={() => setShowCertificateView(true)}
-                            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-colors cursor-pointer bg-emerald-50/50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm"
-                          >
-                            <Printer className="w-4 h-4" />
-                            Print Warrant
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {Object.entries(selectedItem.specifications).map(([key, value], idx) => (
-                            <div key={idx} className="flex flex-col gap-1 p-5 rounded-2xl bg-white/50 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
-                              <span className="text-xs font-medium text-slate-500">{key}</span>
-                              <span className="text-sm font-bold text-slate-800">{value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
                     {activeSidebarTab === 'cryptography' && (
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -797,14 +812,14 @@ export default function App() {
                             Ledger Locked
                           </span>
                         </div>
-                        <div className="p-6 rounded-3xl bg-slate-900/95 backdrop-blur-xl text-white flex flex-col gap-4 shadow-xl border border-slate-700/50">
+                        <div className="py-6 flex flex-col gap-4">
                           <div className="flex justify-between items-center text-xs font-mono text-slate-300">
                             <span className="text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
                               <Hash className="w-4 h-4 text-emerald-500" />
                               <span>SHA-256 Checksum Block</span>
                             </span>
                           </div>
-                          <div className="p-5 bg-black/40 rounded-2xl text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap select-all leading-relaxed break-all border border-slate-700/50 shadow-inner">
+                          <div className="py-4 text-emerald-600 font-mono text-xs overflow-x-auto whitespace-pre-wrap select-all leading-relaxed break-all">
                             {selectedItem.securityHash}
                           </div>
                         </div>
@@ -1148,24 +1163,66 @@ export default function App() {
               transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
               className="relative w-[280px] max-w-[80vw] bg-white h-full shadow-2xl flex flex-col border-r border-slate-200"
             >
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <span className="font-bold text-slate-800 tracking-tight">Navigation</span>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 -mr-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+                  className="p-2 -mr-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-full transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
+              </div>
+
+              {/* Mobile Profile Card */}
+              <div className="flex flex-col gap-4 p-4 border-b border-slate-100 bg-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-display font-bold text-xl shadow-lg shadow-emerald-500/20 shrink-0">
+                    M
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-slate-900 font-bold text-sm">Milan Biswas</span>
+                    <span className="text-slate-500 text-xs font-medium">Indus@Milan@2026</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2 px-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">DOB</span>
+                    <span className="font-semibold text-slate-700">02/01/1984</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">ID Document</span>
+                    <span className="font-semibold text-slate-700">**** 1162</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">CKYC No.</span>
+                    <span className="font-semibold text-slate-700">7998643-233976</span>
+                  </div>
+                </div>
+                <div className="border-t border-slate-200/50 pt-3 mt-1 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-400">Operator Status</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
+                    <span className="text-xs font-bold text-emerald-700">Active Node</span>
+                  </div>
+                </div>
               </div>
               
               <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
                 <button
                   type="button"
-                  onClick={() => { setActiveSidebarTab('owner'); setIsMobileMenuOpen(false); }}
-                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'owner' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                  onClick={() => { setActiveSidebarTab('info'); setIsMobileMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'info' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                 >
                   <UserCheck className="w-5 h-5" />
-                  <span>Owner details</span>
+                  <span>Info</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveSidebarTab('document'); setIsMobileMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'document' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                >
+                  <FileCheck className="w-5 h-5" />
+                  <span>Document</span>
                 </button>
                 <button
                   type="button"
@@ -1188,14 +1245,6 @@ export default function App() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setActiveSidebarTab('details'); setIsMobileMenuOpen(false); }}
-                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'details' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
-                >
-                  <Layers className="w-5 h-5" />
-                  <span>Overview</span>
-                </button>
-                <button
-                  type="button"
                   onClick={() => { setActiveSidebarTab('cryptography'); setIsMobileMenuOpen(false); }}
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'cryptography' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                 >
@@ -1213,6 +1262,17 @@ export default function App() {
                   </button>
                 )}
               </nav>
+
+              {/* Mobile Secure Network Alert */}
+              <div className="p-4 border-t border-slate-100 bg-slate-50 mt-auto">
+                <div className="flex items-center gap-2 text-emerald-800 mb-2">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span className="font-bold text-xs">Indus Secure Network</span>
+                </div>
+                <p className="text-xs text-emerald-900/70 leading-relaxed font-medium">
+                  Your connection is authenticated. Cryptographic keys and clearances are active.
+                </p>
+              </div>
             </motion.div>
           </div>
         )}
