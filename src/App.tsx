@@ -283,6 +283,15 @@ export default function App() {
                 </span>
               </div>
 
+              {/* URL Change Notification */}
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-start gap-3 shadow-sm animate-in fade-in zoom-in duration-500">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-amber-800 leading-relaxed">
+                  <span className="font-bold text-amber-900 block mb-0.5">Important Notice: System Relocation</span>
+                  Please be advised that this portal's web address (URL) will be changing soon. Keep an eye out for further communications regarding the new secure URL.
+                </div>
+              </div>
+
               {/* Mandatory Policy Declaration Warning Notice */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
