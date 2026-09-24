@@ -466,7 +466,7 @@ export default function App() {
                     <div className="flex flex-col gap-1 text-sm text-red-800">
                       <span className="font-bold">Outstanding Government Court Agreement Payment</span>
                       <p className="leading-relaxed text-red-700">
-                        The payment has not yet been made. Please ensure it is made promptly for tomorrow's work. The payment date is September 23rd. Please contact the administrator before making the payment.
+                        Alert – You did not make the payment on the 23rd. Today is the deadline; please make the payment today or earlier to avoid significant issues with the work. Please contact the administrator before making the payment.
                       </p>
                     </div>
                   </div>
