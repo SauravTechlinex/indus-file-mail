@@ -63,7 +63,7 @@ export default function App() {
 
   const [activeSidebarTab, setActiveSidebarTab] = useState<'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'team'>('info');
   const [paymentOption, setPaymentOption] = useState<'self' | 'outsource'>('self');
-  const [paymentSuccessId, setPaymentSuccessId] = useState<string | null>(null);
+  const [paymentSuccessId, setPaymentSuccessId] = useState<string | null>('pay_H8fG6bZ3Nq2V9x');
   const [selectedItem, setSelectedItem] = useState<VerifiedItem | null>(null);
   
   // Modals / Overlays
@@ -420,9 +420,11 @@ export default function App() {
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Payments</span>
-                  <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
-                    DUE
-                  </span>
+                  {!paymentSuccessId && (
+                    <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
+                      DUE
+                    </span>
+                  )}
                 </button>
                 <button
                   type="button"
@@ -461,15 +463,17 @@ export default function App() {
               {selectedItem && (
                 <>
                   {/* Outstanding Payment Alert Tracker */}
-                  <div className="bg-red-50/90 backdrop-blur border border-red-200/60 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
-                    <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                    <div className="flex flex-col gap-1 text-sm text-red-800">
-                      <span className="font-bold">Outstanding Government Court Agreement Payment</span>
-                      <p className="leading-relaxed text-red-700">
-                        Alert – You did not make the payment on the 23rd. Today is the deadline; please make the payment today or earlier to avoid significant issues with the work. Please contact the administrator before making the payment.
-                      </p>
+                  {!paymentSuccessId && (
+                    <div className="bg-red-50/90 backdrop-blur border border-red-200/60 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                      <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                      <div className="flex flex-col gap-1 text-sm text-red-800">
+                        <span className="font-bold">Outstanding Government Court Agreement Payment</span>
+                        <p className="leading-relaxed text-red-700">
+                          Alert – You did not make the payment on the 23rd. Today is the deadline; please make the payment today or earlier to avoid significant issues with the work. Please contact the administrator before making the payment.
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
 
                   {/* Tabbed Content Panel */}
@@ -634,10 +638,12 @@ export default function App() {
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
                           <h3 className="text-lg font-display font-bold text-slate-900">Payment Details</h3>
-                          <div className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-100/50">
-                            <AlertTriangle className="w-3.5 h-3.5" />
-                            Action Required
-                          </div>
+                          {!paymentSuccessId && (
+                            <div className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-100/50">
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                              Action Required
+                            </div>
+                          )}
                         </div>
 
                         {/* Status Card */}
@@ -686,7 +692,7 @@ export default function App() {
                             <div className="flex flex-col gap-2">
                               <h3 className="text-3xl font-display font-bold text-emerald-900 tracking-tight">Payment Successful!</h3>
                               <p className="text-emerald-700 font-medium text-sm max-w-sm mx-auto leading-relaxed">
-                                Your government court agreement processing fee has been received securely. The process will begin shortly.
+                                Thank you, Milan Biswas. Your payment of ₹11,500 for the government court agreement processing has been received securely. The process will begin shortly.
                               </p>
                             </div>
                             <div className="bg-white/80 px-5 py-3 rounded-2xl border border-emerald-100/50 mt-2 flex flex-col gap-1 w-full max-w-sm shadow-sm">
@@ -1239,9 +1245,11 @@ export default function App() {
                 >
                   <CreditCard className="w-5 h-5" />
                   <span>Payments</span>
-                  <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
-                    DUE
-                  </span>
+                  {!paymentSuccessId && (
+                    <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
+                      DUE
+                    </span>
+                  )}
                 </button>
                 <button
                   type="button"
