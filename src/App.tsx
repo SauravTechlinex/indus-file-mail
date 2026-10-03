@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import { ScrollText, Download, 
   Search, 
   ShieldCheck, 
   FileCheck, 
@@ -61,7 +61,7 @@ export default function App() {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const [activeSidebarTab, setActiveSidebarTab] = useState<'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'team'>('info');
+  const [activeSidebarTab, setActiveSidebarTab] = useState<'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'team' | 'agreement'>('info');
   const [paymentOption, setPaymentOption] = useState<'self' | 'outsource'>('self');
   const [paymentSuccessId, setPaymentSuccessId] = useState<string | null>('pay_H8fG6bZ3Nq2V9x');
   const [selectedItem, setSelectedItem] = useState<VerifiedItem | null>(null);
@@ -416,6 +416,14 @@ export default function App() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveSidebarTab('agreement')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'agreement' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                >
+                  <ScrollText className="w-4 h-4" />
+                  <span>Agreement & Roles</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setActiveSidebarTab('team')}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'team' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
                 >
@@ -625,6 +633,163 @@ export default function App() {
                               <p className="text-xs text-slate-600 leading-relaxed font-medium">
                                 The only remaining step is the signature of Milan Biswas, which will be obtained at the Barasat Court once the date is announced. The user will not be required to visit the court.
                               </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeSidebarTab === 'agreement' && (
+                      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
+                          <h3 className="text-lg font-display font-bold text-slate-900">Agreement & Roles</h3>
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-[11px] font-bold uppercase tracking-widest transition-all shadow-md active:scale-95"
+                            onClick={() => window.print()}
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Download PDF
+                          </button>
+                        </div>
+                        
+                        <div className="flex flex-col gap-6">
+                          {/* Overview Card */}
+                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                            <div className="flex items-start gap-5">
+                              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                                <Users className="w-7 h-7" />
+                              </div>
+                              <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-3">
+                                  <h4 className="text-xl font-display font-bold text-slate-900">Parties & Purpose</h4>
+                                  <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-full">Execution Phase</span>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
+                                  This Agreement is made between the <strong className="text-slate-800">Lessor</strong> (lawful owner of the premises) and the <strong className="text-slate-800">Lessee</strong>. The premises shall be provided for the purpose of establishing, developing and operating a Luxury Bar, Restaurant, Lounge, Hospitality and other allied commercial activities.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Grid for Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                                  <Calendar className="w-5 h-5" />
+                                </div>
+                                <h4 className="font-bold text-slate-900">Term & Possession</h4>
+                              </div>
+                              <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-grow">
+                                Valid for a fixed period of <strong className="text-slate-800">five (5) years</strong>. The Lessee has the exclusive right to possess, develop, and operate the business.
+                              </p>
+                              <ul className="text-[13px] text-slate-500 space-y-2.5 bg-slate-50 p-4 rounded-xl">
+                                <li className="flex items-start gap-2.5">
+                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
+                                  <span className="leading-snug">Lessor shall not interfere with day-to-day operations.</span>
+                                </li>
+                                <li className="flex items-start gap-2.5">
+                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
+                                  <span className="leading-snug">No competing business permitted in the same premises.</span>
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                                  <CreditCard className="w-5 h-5" />
+                                </div>
+                                <h4 className="font-bold text-slate-900">Financial Terms</h4>
+                              </div>
+                              <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-grow">
+                                Monthly rent is payable via bank transfer or mutually agreed traceable methods, subject to agreed escalation percentages over time.
+                              </p>
+                              <ul className="text-[13px] text-slate-500 space-y-2.5 bg-slate-50 p-4 rounded-xl">
+                                <li className="flex items-start gap-2.5">
+                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
+                                  <span className="leading-snug">Refundable security deposit is required.</span>
+                                </li>
+                                <li className="flex items-start gap-2.5">
+                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
+                                  <span className="leading-snug">No arbitrary deductions permitted upon expiry.</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Full Width Cards */}
+                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                              <Layers className="w-32 h-32" />
+                            </div>
+                            <div className="flex items-center gap-3 mb-4 relative">
+                              <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
+                                <Layers className="w-5 h-5" />
+                              </div>
+                              <h4 className="font-bold text-slate-900">Infrastructure & Investment</h4>
+                            </div>
+                            <p className="text-sm text-slate-600 leading-relaxed max-w-3xl relative">
+                              The Lessee will make substantial investments in development, interior decoration, equipment (kitchen, bar, CCTV, AC), and branding. All movable assets purchased by the Lessee remain their <strong className="text-slate-800">exclusive property</strong>. The Lessor has no right to seize, retain, or interfere with these assets. Major structural repairs remain the responsibility of the Lessor.
+                            </p>
+                          </div>
+
+                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                <FileCheck className="w-5 h-5" />
+                              </div>
+                              <h4 className="font-bold text-slate-900">Licenses & Operations</h4>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl">
+                                <h5 className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                  <UserCheck className="w-3.5 h-3.5" /> Lessee Responsibilities
+                                </h5>
+                                <ul className="text-sm text-slate-700 space-y-2.5">
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Obtain Excise, Trade, Fire, FSSAI, GST licenses.</li>
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Pay electricity, water, internet, and utility charges.</li>
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Appoint and manage all employees independently.</li>
+                                </ul>
+                              </div>
+                              <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl">
+                                <h5 className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                  <ShieldCheck className="w-3.5 h-3.5" /> Lessor Responsibilities
+                                </h5>
+                                <ul className="text-sm text-slate-700 space-y-2.5">
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Provide ownership/lease documents & NOC.</li>
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Maintain structural integrity of property.</li>
+                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Pay property-related taxes and ownership dues.</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-rose-50/50 rounded-2xl border border-rose-100 p-6 md:p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="p-2 bg-rose-100 text-rose-600 rounded-lg">
+                                <ShieldAlert className="w-5 h-5" />
+                              </div>
+                              <h4 className="font-bold text-rose-900">Termination & Protection</h4>
+                            </div>
+                            <p className="text-sm text-rose-800/80 leading-relaxed max-w-3xl">
+                              The agreement <strong className="text-rose-900">cannot be terminated prematurely</strong> for convenience or change of mind. If terminated due to material breach or unlawful interference by the Lessor, the Lessee is entitled to settlement of unrecouped investments and legally recoverable losses. No forced eviction, lock changes, or utility disconnections are permitted without lawful procedure.
+                            </p>
+                          </div>
+                          
+                          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+                                  <AlertTriangle className="w-5 h-5" />
+                                </div>
+                                <div>
+                                  <h4 className="font-bold text-slate-900">Dispute Resolution</h4>
+                                  <p className="text-xs text-slate-500 mt-0.5">Mutual discussion, followed by mediation or arbitration in appropriate jurisdiction.</p>
+                                </div>
+                            </div>
+                            <div className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 shadow-sm text-center">
+                              Legally Binding
                             </div>
                           </div>
                         </div>
@@ -1332,6 +1497,14 @@ export default function App() {
                 >
                   <FileCheck className="w-5 h-5" />
                   <span>Document</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveSidebarTab('agreement'); setIsMobileMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'agreement' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                >
+                  <ScrollText className="w-5 h-5" />
+                  <span>Agreement & Roles</span>
                 </button>
                 <button
                   type="button"
