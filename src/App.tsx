@@ -615,6 +615,18 @@ export default function App() {
                           <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
                             Your submitted documents have been successfully reviewed and verified by the administration. Any necessary information or future updates regarding your paperwork will be visible here.
                           </p>
+                          
+                          <div className="mt-8 bg-blue-50/70 border border-blue-100 rounded-2xl p-5 text-left max-w-lg mx-auto flex items-start gap-4 w-full shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                            <div className="w-10 h-10 rounded-full bg-blue-100/80 flex items-center justify-center shrink-0 border border-blue-200">
+                              <Clock className="w-5 h-5 text-blue-700" />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <h4 className="text-sm font-bold text-slate-800">Pending Action: Signature</h4>
+                              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                                The only remaining step is the signature of Milan Biswas, which will be obtained at the Barasat Court once the date is announced. The user will not be required to visit the court.
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -655,6 +667,42 @@ export default function App() {
                           )}
                         </div>
 
+                        {paymentSuccessId && (
+                          <div className="flex flex-col gap-5 mb-2">
+                            <div className="flex items-center gap-3 bg-emerald-50/80 text-emerald-800 p-4 rounded-2xl border border-emerald-100/60 font-semibold shadow-sm animate-in fade-in slide-in-from-top-2">
+                              <Check className="w-5 h-5 text-emerald-600 shrink-0 stroke-[3]" />
+                              You have no outstanding payments.
+                            </div>
+                            
+                            <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-emerald-100/80 flex flex-col gap-4 w-full shadow-[0_8px_30px_rgb(16,185,129,0.12)] animate-in fade-in slide-in-from-top-4">
+                              <div className="flex flex-col gap-3">
+                                <div className="flex justify-between items-end">
+                                  <div className="flex flex-col text-left gap-1">
+                                    <span className="text-sm font-bold text-slate-900 tracking-tight">Court Agreement Progress</span>
+                                    <span className="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Active Processing</span>
+                                  </div>
+                                  <span className="text-2xl font-black text-emerald-600 tracking-tighter">98%</span>
+                                </div>
+                                <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-inset ring-slate-200/50">
+                                  <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full relative overflow-hidden" style={{ width: '98%' }}>
+                                    <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></div>
+                                  <p className="text-xs font-semibold text-emerald-700">Processing legal documentation and verifying signatures...</p>
+                                </div>
+                                <div className="mt-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50 flex items-start gap-2">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                                  <p className="text-[11px] font-medium text-blue-800 leading-relaxed">
+                                    <strong className="font-bold">Status Update:</strong> The owner whose signature is still pending is currently at the Barasat Court.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Status Card */}
                         <div className="border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
                           <div className="flex items-center gap-2 text-emerald-800 font-bold text-lg">
@@ -693,23 +741,7 @@ export default function App() {
                         </div>
 
                         {/* Government Court Agreement Processing */}
-                        {paymentSuccessId ? (
-                          <div className="bg-emerald-50 rounded-2xl p-8 flex flex-col items-center justify-center text-center gap-5 animate-in zoom-in-95 duration-700">
-                            <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/40 text-white mb-2">
-                              <Check className="w-10 h-10 stroke-[3]" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              <h3 className="text-3xl font-display font-bold text-emerald-900 tracking-tight">Payment Successful!</h3>
-                              <p className="text-emerald-700 font-medium text-sm max-w-sm mx-auto leading-relaxed">
-                                Thank you, Milan Biswas. Your payment of ₹11,500 for the government court agreement processing has been received securely. The process will begin shortly.
-                              </p>
-                            </div>
-                            <div className="bg-white/80 px-5 py-3 rounded-2xl border border-emerald-100/50 mt-2 flex flex-col gap-1 w-full max-w-sm shadow-sm">
-                              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Transaction ID</span>
-                              <span className="font-mono text-sm text-emerald-800 font-bold">{paymentSuccessId}</span>
-                            </div>
-                          </div>
-                        ) : (
+                        {!paymentSuccessId && (
                           <div className="pb-6 mb-2 flex flex-col gap-5">
                           <div className="flex flex-col gap-1">
                             <h4 className="text-base font-bold text-slate-800">Government Court Agreement Processing</h4>
@@ -827,15 +859,77 @@ export default function App() {
                             Ledger Locked
                           </span>
                         </div>
-                        <div className="py-6 flex flex-col gap-4">
-                          <div className="flex justify-between items-center text-xs font-mono text-slate-300">
-                            <span className="text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
-                              <Hash className="w-4 h-4 text-emerald-500" />
-                              <span>SHA-256 Checksum Block</span>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Protocol</span>
+                            <span className="text-sm font-semibold text-slate-800">AES-256-GCM</span>
+                          </div>
+                          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clearance</span>
+                            <span className="text-sm font-semibold text-slate-800">Level 4 (Gov)</span>
+                          </div>
+                          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Verification</span>
+                            <span className="text-sm font-semibold text-emerald-600">Blockchain</span>
+                          </div>
+                          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Node Status</span>
+                            <span className="text-sm font-semibold text-emerald-600 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active
                             </span>
                           </div>
-                          <div className="py-4 text-emerald-600 font-mono text-xs overflow-x-auto whitespace-pre-wrap select-all leading-relaxed break-all">
-                            {selectedItem.securityHash}
+                        </div>
+
+                        <div className="py-2 flex flex-col gap-4">
+                          <div className="bg-slate-900 rounded-3xl p-6 shadow-inner relative overflow-hidden group border border-slate-800">
+                            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                            
+                            <div className="relative z-10 flex justify-between items-center text-xs font-mono mb-4 border-b border-slate-800 pb-4">
+                              <span className="text-emerald-400/80 uppercase tracking-widest flex items-center gap-2 font-bold">
+                                <Hash className="w-4 h-4 text-emerald-500" />
+                                <span>SHA-256 Signature Hash</span>
+                              </span>
+                              <span className="text-slate-500 text-[10px] font-bold tracking-widest bg-slate-800/50 px-2 py-1 rounded shadow-sm border border-slate-700/50">IMMUTABLE</span>
+                            </div>
+                            <div className="relative z-10 font-mono text-sm text-emerald-400 overflow-x-auto whitespace-pre-wrap select-all leading-relaxed break-all group-hover:text-emerald-300 transition-colors">
+                              {selectedItem.securityHash}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-1 flex flex-col gap-3 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
+                          <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Cryptographic Audit Trail</h4>
+                          
+                          <div className="flex items-start gap-4 text-sm relative">
+                            <div className="flex flex-col items-center mt-1 z-10 relative">
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></div>
+                              <div className="w-0.5 h-10 bg-emerald-200 mt-1"></div>
+                            </div>
+                            <div className="flex flex-col gap-0.5 pb-4">
+                              <span className="font-bold text-slate-800">Identity Verified</span>
+                              <span className="text-xs font-medium text-slate-500">Cross-referenced with federal databases.</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-start gap-4 text-sm -mt-2 relative">
+                            <div className="flex flex-col items-center mt-1 z-10 relative">
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></div>
+                              <div className="w-0.5 h-10 bg-emerald-200 mt-1"></div>
+                            </div>
+                            <div className="flex flex-col gap-0.5 pb-4">
+                              <span className="font-bold text-slate-800">Data Encrypted</span>
+                              <span className="text-xs font-medium text-slate-500">Payload secured with AES-256-GCM cipher.</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-start gap-4 text-sm -mt-2 relative">
+                            <div className="flex flex-col items-center mt-1 z-10 relative">
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50 animate-pulse"></div>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-emerald-700">Checksum Generated</span>
+                              <span className="text-xs font-medium text-slate-500">Ledger successfully locked and broadcasted.</span>
+                            </div>
                           </div>
                         </div>
                       </div>
