@@ -17,13 +17,9 @@ if (!global.mongooseCache) {
 }
 
 export const connectDB = async (): Promise<typeof mongoose> => {
-  const uri = process.env.MONGODB_URI;
-
-  if (!uri) {
-    const errorMsg = '❌ MONGODB_URI is not set in environment variables';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const uri =
+    process.env.MONGODB_URI ||
+    'mongodb+srv://akashbiswasedu_db_user:s2kb8TbEK8F6Tu7n@cluster0.h4afmmt.mongodb.net/indus_db?retryWrites=true&w=majority&appName=Cluster0';
 
   if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
@@ -32,7 +28,8 @@ export const connectDB = async (): Promise<typeof mongoose> => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     };
 
     cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
