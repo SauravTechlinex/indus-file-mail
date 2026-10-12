@@ -748,7 +748,7 @@ export default function App() {
                 </span>
               </div>
               <p className="text-[11px] text-rose-200/80 leading-relaxed">
-                Liquidation refund of <strong className="text-white font-bold font-mono">₹2,56,500</strong> (+ statutory accrued interest) is approved. All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
+                Liquidation refund of <strong className="text-white font-bold font-mono">₹2,56,500</strong> is approved (Final interest will be shown in a few days). All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
               </p>
             </div>
           </div>
@@ -1061,7 +1061,7 @@ export default function App() {
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="font-bold text-rose-950 text-sm">Agreement Revocation & Liquidation Active</span>
                             <p className="text-rose-800 leading-relaxed font-medium">
-                              The operator has formally cancelled all agreements and covenants. Settlement liquidation voucher of <strong>₹2,56,500</strong> principal (+ <strong>₹19,238</strong> statutory interest = <strong>₹2,75,738</strong>) has been generated. All operational and action functions have been disabled.
+                              The operator has formally cancelled all agreements and covenants. Settlement liquidation voucher of <strong>₹2,56,500</strong> has been generated (Final interest will be shown in a few days). All operational and action functions have been disabled.
                             </p>
                           </div>
                         </div>
@@ -1376,7 +1376,7 @@ export default function App() {
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="font-bold text-rose-950 text-sm">Transactions & Accounts Frozen</span>
                             <p className="text-rose-800 leading-relaxed font-medium">
-                              All payment gateways and contract accounts are deactivated because the contract has been cancelled. A complete liquidation refund voucher of <strong>₹2,56,500</strong> (+ <strong>₹19,238</strong> statutory interest = <strong>₹2,75,738</strong>) has been generated. No new payments or upgrades can be processed.
+                              All payment gateways and contract accounts are deactivated because the contract has been cancelled. A complete liquidation refund voucher of <strong>₹2,56,500</strong> has been generated (Final interest will be shown in a few days). No new payments or upgrades can be processed.
                             </p>
                           </div>
                         </div>
@@ -3947,15 +3947,15 @@ export default function App() {
                           </div>
                           <div>
                             <span className="text-[10px] uppercase text-slate-400 block font-bold">Accrued Statutory Interest</span>
-                            <span className="font-black text-emerald-700 text-sm font-mono">+{formatINR(totals.interestAmount)}</span>
+                            <span className="font-bold text-amber-700 text-xs block mt-1">Final interest will be shown in a few days</span>
                           </div>
                           <div className="col-span-2 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 flex items-center justify-between">
                             <div>
-                              <span className="text-[10px] uppercase text-emerald-900 font-extrabold block">Final Liquidated Amount (With Interest)</span>
-                              <span className="text-xs text-emerald-800 font-medium">To be credited to verified account</span>
+                              <span className="text-[10px] uppercase text-emerald-900 font-extrabold block">Settlement Principal Amount</span>
+                              <span className="text-xs text-emerald-800 font-medium">Final interest will be shown in a few days</span>
                             </div>
                             <span className="text-xl font-black text-emerald-950 font-mono">
-                              {formatINR(totals.finalTotalWithInterest)}
+                              {formatINR(totals.principalAmount)}
                             </span>
                           </div>
                         </div>
@@ -4012,7 +4012,7 @@ export default function App() {
                       <strong className="block text-amber-900 font-extrabold mb-0.5 text-xs">
                         Final Review Settlement Terms:
                       </strong>
-                      This is a final review of all bound commercial obligations. Total original settlement amount is <strong className="text-amber-950 font-bold">₹2,56,500</strong>. No interest is displayed at this review stage; if you cancel completely, the full original amount including statutory accrued interest will be generated and disbursed.
+                      This is a final review of all bound commercial obligations. Total original settlement amount is <strong className="text-amber-950 font-bold">₹2,56,500</strong>. No interest will be shown at this stage; Final interest will be shown in a few days.
                     </div>
                   </div>
 
@@ -4097,10 +4097,10 @@ export default function App() {
                               <span>Statutory Accrued Interest</span>
                             </div>
                             <span className="text-xs font-bold text-amber-100 mt-1 block">
-                              Disbursed Upon Full Cancellation
+                              Final interest will be shown in a few days
                             </span>
                             <span className="text-[10px] text-amber-200/80 mt-0.5 block">
-                              Complete contract cancellation will unlock the original amount including full interest.
+                              Accrued statutory interest is in administrative processing.
                             </span>
                           </div>
                         </div>
@@ -4113,7 +4113,7 @@ export default function App() {
                     <div className="flex items-start gap-2 leading-relaxed">
                       <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="text-slate-900 font-bold">Contract Deletion & Final Interest Note:</strong> In this final review, no interest is previewed. If you completely revoke and delete the contract, then the original amount including full statutory interest will be shown in the final liquidation voucher and credited to your verified account.
+                        <strong className="text-slate-900 font-bold">Final Interest Directive:</strong> No interest is shown here. Final interest will be shown in a few days and disbursed along with the original settlement amount of ₹2,56,500.
                       </div>
                     </div>
                     <div className="flex items-start gap-2 leading-relaxed pt-1.5 border-t border-slate-200/60">
