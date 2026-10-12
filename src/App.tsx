@@ -252,9 +252,10 @@ export default function App() {
   const [showCertificateView, setShowCertificateView] = useState(initialRoute.showCertificate);
   const [showPaymentBlockModal, setShowPaymentBlockModal] = useState(false);
   const [showRevokeContractModal, setShowRevokeContractModal] = useState(initialRoute.showRevokeModal);
-  const [isLienAcknowledged, setIsLienAcknowledged] = useState(false);
+  const [isContractCancelled] = useState(true);
+  const [isLienAcknowledged, setIsLienAcknowledged] = useState(true);
   const [isLicenseTransferRequested, setIsLicenseTransferRequested] = useState(true);
-  const [revokeSuccessMessage, setRevokeSuccessMessage] = useState(false);
+  const [revokeSuccessMessage, setRevokeSuccessMessage] = useState(true);
   const [selectedRevokeItems, setSelectedRevokeItems] = useState<string[]>([
     'agreement_base',
     'bidding_amount',
@@ -417,6 +418,7 @@ export default function App() {
   };
 
   const openCertificateView = () => {
+    if (isContractCancelled) return;
     setShowCertificateView(true);
     const targetPath = '/document/certificate';
     if (typeof document !== 'undefined') {
@@ -439,6 +441,7 @@ export default function App() {
   };
 
   const openTierRequestModal = (tier: 'tier1' | 'tier2') => {
+    if (isContractCancelled) return;
     setSelectedUpgradeTier(tier);
     setCalculatorTier(tier);
     setIsTierAgreementChecked(false);
@@ -603,11 +606,13 @@ export default function App() {
   };
 
   const handlePayment = () => {
+    if (isContractCancelled) return;
     setShowPaymentBlockModal(true);
   };
 
   const handleReportSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isContractCancelled) return;
     if (!reportMessage.trim()) return;
     setReportSuccess(true);
     setTimeout(() => {
@@ -618,6 +623,7 @@ export default function App() {
   };
 
   const handlePrint = () => {
+    if (isContractCancelled) return;
     window.print();
   };
 
@@ -691,14 +697,18 @@ export default function App() {
             <span className="hidden sm:inline-block text-slate-200">|</span>
             {isLoggedIn ? (
               <div className="flex items-center gap-2 sm:gap-4">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-[#007a3e] px-2 sm:px-3 py-1.5 rounded-full border border-emerald-250 bg-emerald-50/50 max-w-[120px] sm:max-w-none overflow-hidden">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#007a3e] animate-pulse shrink-0" />
-                  <span className="font-bold truncate" title={usernameInput || 'Indus@Milan@2026'}>OP: {usernameInput || 'Indus@Milan@2026'}</span>
+                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded bg-rose-600 text-white font-mono font-bold text-[10px] tracking-wider uppercase shadow-xs">
+                  <ShieldAlert className="w-3 h-3" />
+                  Contract Cancelled
+                </span>
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-rose-700 px-2 sm:px-3 py-1.5 rounded-full border border-rose-300 bg-rose-50 max-w-[130px] sm:max-w-none overflow-hidden font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span className="truncate" title={usernameInput || 'Indus@Milan@2026'}>OP: {usernameInput || 'Indus@Milan@2026'} (REVOKED)</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-1.5 font-mono text-[10px] uppercase text-emerald-800 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-900 px-2.5 py-1.5 rounded-lg border border-emerald-200 transition-all cursor-pointer font-bold"
+                  className="flex items-center gap-1.5 font-mono text-[10px] uppercase text-rose-800 bg-rose-50 hover:bg-rose-100 hover:text-rose-900 px-2.5 py-1.5 rounded-lg border border-rose-200 transition-all cursor-pointer font-bold"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">LOGOUT</span>
@@ -720,6 +730,43 @@ export default function App() {
           </nav>
         </div>
       </header>
+
+      {/* Global Contract Cancellation & Liquidation Banner */}
+      {isLoggedIn && isContractCancelled && (
+        <div className="w-full bg-gradient-to-r from-rose-900 via-rose-800 to-slate-900 text-white px-4 sm:px-6 py-3.5 shadow-md border-b border-rose-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-10">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+              <ShieldAlert className="w-5 h-5 text-rose-300" />
+            </div>
+            <div className="flex flex-col gap-0.5 text-left">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-black uppercase tracking-wider text-rose-200 bg-rose-950/70 px-2 py-0.5 rounded border border-rose-500/40">
+                  ALL CONTRACTS CANCELLED & REVOKED
+                </span>
+                <span className="text-xs text-rose-100 font-bold">
+                  Operator Milan Biswas (Indus@Milan@2026) has terminated all commercial agreements.
+                </span>
+              </div>
+              <p className="text-[11px] text-rose-200/80 leading-relaxed">
+                Liquidation refund of <strong className="text-white font-bold font-mono">₹2,56,500</strong> (+ statutory accrued interest) is approved. All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+            <span className="px-2.5 py-1 rounded-md bg-rose-950/60 border border-rose-500/40 text-[10px] font-bold text-rose-300 uppercase flex items-center gap-1.5">
+              <Lock className="w-3 h-3 text-rose-400" /> Functions Locked
+            </span>
+            <button
+              type="button"
+              onClick={openRevokeModal}
+              className="px-3.5 py-1.5 rounded-lg bg-white text-rose-900 hover:bg-rose-50 font-black text-xs transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
+            >
+              <FileCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>View Settlement Voucher</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Container */}
       <main className="relative flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 md:py-12 z-10 flex flex-col gap-6 md:gap-10">
@@ -854,8 +901,8 @@ export default function App() {
                 <div className="border-t border-slate-200/50 pt-4 flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-400">Operator Status</span>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-                    <span className="text-xs font-bold text-emerald-700">Active Node</span>
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+                    <span className="text-xs font-bold text-rose-700">Contract Cancelled</span>
                   </div>
                 </div>
               </div>
@@ -931,22 +978,22 @@ export default function App() {
                   <button
                     type="button"
                     onClick={openRevokeModal}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200/80 bg-rose-50/40 shadow-2xs group cursor-pointer active:scale-98"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all text-xs w-full text-left font-bold text-rose-700 hover:text-rose-800 hover:bg-rose-100 border border-rose-300 bg-rose-50 shadow-2xs group cursor-pointer active:scale-98"
                   >
                     <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0 group-hover:scale-110 transition-transform" />
-                    <span>Revoke Contract</span>
+                    <span>Contract Cancelled (Liquidation Order)</span>
                   </button>
                 </div>
               </nav>
 
               {/* Informative Grid Blocks (Moved to Sidebar) */}
-              <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-3 mt-4">
-                <div className="flex items-center gap-2 text-emerald-800">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="font-bold text-xs">Indus Secure Network</span>
+              <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-4 flex flex-col gap-2 mt-4">
+                <div className="flex items-center gap-2 text-rose-800">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  <span className="font-bold text-xs">Agreement Revoked & Void</span>
                 </div>
-                <p className="text-xs text-emerald-900/70 leading-relaxed font-medium">
-                  Your connection is authenticated. Cryptographic keys and clearances are active.
+                <p className="text-[11px] text-rose-900/80 leading-relaxed font-medium">
+                  All active contracts have been cancelled by the operator. Interactive functions are disabled pending final liquidation disbursement.
                 </p>
               </div>
             </aside>
@@ -978,8 +1025,8 @@ export default function App() {
                           
                           <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
                             <div className="flex flex-col gap-2">
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100 w-fit shadow-sm">
-                                <Check className="w-3.5 h-3.5" /> REGISTERED PROFILE
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold tracking-wide border border-rose-200 w-fit shadow-sm">
+                                <XCircle className="w-3.5 h-3.5 text-rose-600" /> CANCELLED BY OPERATOR
                               </span>
                               <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight mt-2">
                                 {selectedItem.name}
@@ -990,7 +1037,7 @@ export default function App() {
                             </div>
                             <div className="flex flex-col items-start md:items-end gap-1 text-sm font-semibold">
                               <span className="text-slate-400 text-xs font-medium">Status</span>
-                              <span className="text-emerald-600 font-bold">{selectedItem.status}</span>
+                              <span className="text-rose-600 font-bold">CANCELLED / REVOKED</span>
                             </div>
                           </div>
 
@@ -1007,6 +1054,18 @@ export default function App() {
                             </div>
                           </div>
                         </div>
+
+                        {/* Agreement Revocation Notice Banner */}
+                        <div className="p-4 sm:p-5 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-3.5 shadow-sm">
+                          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="font-bold text-rose-950 text-sm">Agreement Revocation & Liquidation Active</span>
+                            <p className="text-rose-800 leading-relaxed font-medium">
+                              The operator has formally cancelled all agreements and covenants. Settlement liquidation voucher of <strong>₹2,56,500</strong> principal (+ <strong>₹19,238</strong> statutory interest = <strong>₹2,75,738</strong>) has been generated. All operational and action functions have been disabled.
+                            </p>
+                          </div>
+                        </div>
+
                         {/* Compact Process Tracker Section */}
                         <div className="w-full border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/50 pb-3">
@@ -1054,8 +1113,8 @@ export default function App() {
                             ['Pin code', '743251'],
                             ['Nominee', 'Usha Rani Biswas'],
                             ['Relationship Of nominee', 'Mother'],
-                            ['Company agreement', 'Verified'],
-                            ['Government Court Agreement', 'Not yet started']
+                            ['Company agreement', 'Cancelled & Revoked'],
+                            ['Government Court Agreement', 'Cancelled / Liquidation Order Issued']
                           ].map(([key, value], idx) => (
                             <div key={idx} className="flex flex-col gap-1 py-4 border-b border-slate-100">
                               <span className="text-xs font-medium text-slate-500">{key}</span>
@@ -1068,11 +1127,12 @@ export default function App() {
                           <h3 className="text-lg font-display font-bold text-slate-900">Complete Specifications</h3>
                           <button
                             type="button"
-                            onClick={openCertificateView}
-                            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 transition-colors cursor-pointer bg-emerald-50/50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm"
+                            disabled
+                            title="Action disabled: Contract has been cancelled"
+                            className="text-xs font-bold text-slate-400 flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200 opacity-50 cursor-not-allowed pointer-events-none"
                           >
                             <Printer className="w-4 h-4" />
-                            Print Warrant
+                            Print Warrant (Disabled)
                           </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1092,22 +1152,22 @@ export default function App() {
                           <h3 className="text-lg font-display font-bold text-slate-900">Document Verification</h3>
                         </div>
                         <div className="flex flex-col items-center justify-center text-center py-10 px-4 border-b border-slate-100 pb-16">
-                          <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-emerald-50/50">
-                            <FileCheck className="w-10 h-10 text-emerald-600" />
+                          <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-rose-50/50">
+                            <ShieldAlert className="w-10 h-10 text-rose-600" />
                           </div>
-                          <h2 className="text-2xl font-bold text-slate-800 mb-3">All Documents Verified</h2>
+                          <h2 className="text-2xl font-bold text-slate-800 mb-3">All Documents & Filings Cancelled</h2>
                           <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-                            Your submitted documents have been successfully reviewed and verified by the administration. Any necessary information or future updates regarding your paperwork will be visible here.
+                            The user has formally cancelled all commercial agreements and associated filings. Functions have been frozen pending liquidation disbursement.
                           </p>
                           
-                          <div className="mt-8 bg-blue-50/70 border border-blue-100 rounded-2xl p-5 text-left max-w-lg mx-auto flex items-start gap-4 w-full shadow-sm animate-in fade-in slide-in-from-bottom-2">
-                            <div className="w-10 h-10 rounded-full bg-blue-100/80 flex items-center justify-center shrink-0 border border-blue-200">
-                              <Clock className="w-5 h-5 text-blue-700" />
+                          <div className="mt-8 bg-rose-50/70 border border-rose-200 rounded-2xl p-5 text-left max-w-lg mx-auto flex items-start gap-4 w-full shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                            <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0 border border-rose-200">
+                              <AlertTriangle className="w-5 h-5 text-rose-700" />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                              <h4 className="text-sm font-bold text-slate-800">Pending Action: Signature</h4>
-                              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                                The only remaining step is the signature of Milan Biswas, which will be obtained at the Barasat Court once the date is announced. The user will not be required to visit the court.
+                              <h4 className="text-sm font-bold text-rose-900">Notice: All Actions Deactivated</h4>
+                              <p className="text-xs text-rose-800 leading-relaxed font-medium">
+                                All contracts, filings, and pending court visits have been cancelled. Buttons and interactive features cannot be clicked as the liquidation voucher is in effect.
                               </p>
                             </div>
                           </div>
@@ -1121,12 +1181,24 @@ export default function App() {
                           <h3 className="text-lg font-display font-bold text-slate-900">Agreement & Roles</h3>
                           <button
                             type="button"
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-[11px] font-bold uppercase tracking-widest transition-all shadow-md active:scale-95"
-                            onClick={() => window.print()}
+                            disabled
+                            title="Action disabled: Contract has been cancelled"
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-400 rounded text-[11px] font-bold uppercase tracking-widest cursor-not-allowed pointer-events-none opacity-50"
                           >
                             <Download className="w-3.5 h-3.5" />
-                            Download PDF
+                            Download PDF (Disabled)
                           </button>
+                        </div>
+
+                        {/* Revocation notice banner */}
+                        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 flex items-start gap-3.5 shadow-sm">
+                          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="font-bold text-rose-950 text-sm">Commercial Agreement Revoked & Voided</span>
+                            <p className="text-rose-800 leading-relaxed font-medium">
+                              This agreement has been terminated per the operator's revocation request. 100% liens have been surrendered to Milan Biswas. All operational privileges, obligations, and features are deactivated.
+                            </p>
+                          </div>
                         </div>
                         
                         <div className="flex flex-col gap-6">
@@ -1139,7 +1211,7 @@ export default function App() {
                               <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-3">
                                   <h4 className="text-xl font-display font-bold text-slate-900">Parties & Purpose</h4>
-                                  <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-full">Execution Phase</span>
+                                  <span className="px-2.5 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-wider rounded-full">VOID & REVOKED</span>
                                 </div>
                                 <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
                                   This Agreement is made between the <strong className="text-slate-800">Lessor</strong> (lawful owner of the premises) and the <strong className="text-slate-800">Lessee</strong>. The premises shall be provided for the purpose of establishing, developing and operating a Luxury Bar, Restaurant, Lounge, Hospitality and other allied commercial activities.
@@ -1298,6 +1370,17 @@ export default function App() {
 
                     {activeSidebarTab === 'payments' && (
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Revocation notice banner for payments */}
+                        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 flex items-start gap-3.5 shadow-sm">
+                          <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                          <div className="flex flex-col gap-1 text-xs">
+                            <span className="font-bold text-rose-950 text-sm">Transactions & Accounts Frozen</span>
+                            <p className="text-rose-800 leading-relaxed font-medium">
+                              All payment gateways and contract accounts are deactivated because the contract has been cancelled. A complete liquidation refund voucher of <strong>₹2,56,500</strong> (+ <strong>₹19,238</strong> statutory interest = <strong>₹2,75,738</strong>) has been generated. No new payments or upgrades can be processed.
+                            </p>
+                          </div>
+                        </div>
+
                         {/* Top Header with Sub-Tab Switcher */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
                           <div className="flex flex-col gap-1">
@@ -1545,11 +1628,12 @@ export default function App() {
                                   <div className="flex flex-col gap-3 w-full sm:w-auto">
                                     <button 
                                       type="button"
-                                      onClick={handlePayment}
-                                      className="w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 hover:-translate-y-0.5 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl shadow-emerald-600/30 hover:shadow-emerald-600/50 active:scale-95 cursor-pointer"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-300 text-slate-500 px-8 py-3.5 rounded-xl font-bold transition-all opacity-50 cursor-not-allowed pointer-events-none"
                                     >
-                                      <CreditCard className="w-5 h-5" />
-                                      Pay Now
+                                      <Lock className="w-5 h-5" />
+                                      Payment Disabled (Contract Cancelled)
                                     </button>
                                     <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                       <Lock className="w-3 h-3" />
@@ -2002,11 +2086,12 @@ export default function App() {
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() => navigateTo('payments', 'upgrade')}
-                                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer flex items-center gap-2 active:scale-95 self-start sm:self-auto"
+                                  disabled
+                                  title="Action disabled: Contract has been cancelled"
+                                  className="px-4 py-2 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-2 self-start sm:self-auto"
                                 >
-                                  <ArrowUpRight className="w-4 h-4" />
-                                  <span>Compare & Upgrade Tiers</span>
+                                  <Lock className="w-4 h-4" />
+                                  <span>Upgrade Disabled (Cancelled)</span>
                                 </button>
                               </div>
 
@@ -2055,14 +2140,12 @@ export default function App() {
                                     </span>
                                     <button
                                       type="button"
-                                      onClick={() => {
-                                        setSelectedUpgradeTier('tier1');
-                                        navigateTo('payments', 'upgrade');
-                                      }}
-                                      className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-400 text-[11px] font-bold opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-1"
                                     >
-                                      <ArrowUpRight className="w-3.5 h-3.5" />
-                                      <span>Upgrade Tier</span>
+                                      <Lock className="w-3.5 h-3.5" />
+                                      <span>Upgrade Disabled</span>
                                     </button>
                                   </div>
                                 </div>
@@ -2099,33 +2182,31 @@ export default function App() {
                                     </span>
                                     <button
                                       type="button"
-                                      onClick={() => {
-                                        setSelectedUpgradeTier('tier2');
-                                        navigateTo('payments', 'upgrade');
-                                      }}
-                                      className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-400 text-[11px] font-bold opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-1"
                                     >
-                                      <ArrowUpRight className="w-3.5 h-3.5" />
-                                      <span>Upgrade Tier</span>
+                                      <Lock className="w-3.5 h-3.5" />
+                                      <span>Upgrade Disabled</span>
                                     </button>
                                   </div>
                                 </div>
 
-                                {/* Tier 3 (ACTIVE) */}
-                                <div className="p-5 rounded-xl border-2 border-emerald-600 bg-emerald-50/30 flex flex-col justify-between relative shadow-sm">
-                                  <div className="absolute -top-3 right-4 px-2.5 py-0.5 bg-[#007a3e] text-white text-[10px] font-extrabold rounded-full uppercase tracking-wider shadow-xs">
-                                    Your Active Contract
+                                {/* Tier 3 (ACTIVE - NOW CANCELLED) */}
+                                <div className="p-5 rounded-xl border-2 border-rose-400 bg-rose-50/30 flex flex-col justify-between relative shadow-sm">
+                                  <div className="absolute -top-3 right-4 px-2.5 py-0.5 bg-rose-600 text-white text-[10px] font-extrabold rounded-full uppercase tracking-wider shadow-xs">
+                                    Contract Cancelled
                                   </div>
                                   <div>
                                     <div className="flex items-center justify-between mb-3">
-                                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Tier 3</span>
-                                      <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase border border-amber-300">
-                                        Strict Contract
+                                      <span className="text-xs font-bold uppercase tracking-wider text-rose-800">Tier 3</span>
+                                      <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-extrabold uppercase border border-rose-300">
+                                        Revoked Status
                                       </span>
                                     </div>
                                     <div className="mb-2">
-                                      <span className="text-2xl font-black text-emerald-950">₹1,40,000</span>
-                                      <span className="text-[11px] text-emerald-800 font-medium ml-1.5">contract price</span>
+                                      <span className="text-2xl font-black text-slate-900">₹1,40,000</span>
+                                      <span className="text-[11px] text-rose-700 font-bold ml-1.5">in refund settlement</span>
                                     </div>
                                     <h5 className="font-bold text-slate-900 text-sm mb-1.5">Self-Managed Operations</h5>
                                     <div className="flex flex-wrap gap-1.5 mb-2.5">
@@ -2137,43 +2218,44 @@ export default function App() {
                                       </span>
                                     </div>
                                     <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                                      Very few facilities are given, due to which the user has to manage everything himself — profit, loss, everything. The company's contract is made very strictly, and the company is excluded from the facilities.
+                                      Contract terminated per operator cancellation. The principal amount of ₹1,40,000 is included in the ₹2,56,500 total liquidation voucher.
                                     </p>
                                   </div>
-                                  <div className="mt-4 pt-3 border-t border-emerald-200/80 flex items-center justify-between gap-2">
-                                    <div className="p-2 rounded-lg bg-emerald-100/70 text-emerald-900 text-[11px] font-bold leading-snug">
-                                      Active Contract
+                                  <div className="mt-4 pt-3 border-t border-rose-200/80 flex items-center justify-between gap-2">
+                                    <div className="p-2 rounded-lg bg-rose-100/70 text-rose-900 text-[11px] font-bold leading-snug">
+                                      Liquidation Active
                                     </div>
                                     <button
                                       type="button"
-                                      onClick={() => navigateTo('payments', 'upgrade')}
-                                      className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-400 text-[11px] font-bold opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-1"
                                     >
-                                      <span>Upgrade Page</span>
-                                      <ArrowUpRight className="w-3.5 h-3.5" />
+                                      <Lock className="w-3.5 h-3.5" />
+                                      <span>Cancelled</span>
                                     </button>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Upgrade Prompt Banner */}
-                              <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-50 via-blue-50 to-emerald-50 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                              <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 opacity-70">
                                 <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-lg bg-indigo-600 text-white shrink-0">
-                                    <Sparkles className="w-4 h-4" />
+                                  <div className="p-2 rounded-lg bg-slate-400 text-white shrink-0">
+                                    <Lock className="w-4 h-4" />
                                   </div>
-                                  <div className="text-xs text-slate-700">
-                                    <span className="font-bold text-slate-900 block">Want company CA allocation and corporate filing support?</span>
-                                    <span>Compare all 3 contract tiers in detail on our dedicated upgrade page. Requesting an upgrade requires <strong>3 to 7 days for administrative review</strong>.</span>
+                                  <div className="text-xs text-slate-600">
+                                    <span className="font-bold text-slate-800 block">Tier Upgrades & Comparisons Inactive</span>
+                                    <span>All contractual modifications are frozen because the agreement has been revoked by the operator.</span>
                                   </div>
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() => navigateTo('payments', 'upgrade')}
-                                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 shadow-sm active:scale-95"
+                                  disabled
+                                  title="Action disabled: Contract has been cancelled"
+                                  className="px-4 py-2 rounded-xl bg-slate-200 text-slate-400 text-xs font-bold opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1.5 shrink-0"
                                 >
-                                  <span>View Detailed Comparison</span>
-                                  <ChevronRight className="w-4 h-4" />
+                                  <span>Comparison Locked</span>
                                 </button>
                               </div>
                             </div>
@@ -2297,81 +2379,87 @@ export default function App() {
                               </div>
                             </div>
 
+                            {/* Contract Cancellation Notice for Upgrades */}
+                            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+                              <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                              <div className="flex flex-col gap-1 text-xs">
+                                <span className="font-bold text-rose-950 text-sm">Tier Upgrades & Modifications Disabled</span>
+                                <p className="text-rose-800 leading-relaxed font-medium">
+                                  All upgrade requests and tier selections are frozen because the agreement has been formally cancelled by the operator. Refund voucher is active.
+                                </p>
+                              </div>
+                            </div>
+
                             {/* Status Indicator Bar */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                              <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                                  <Check className="w-5 h-5 stroke-[2.5]" />
+                              <div className="bg-rose-50/80 border border-rose-200/80 rounded-2xl p-4 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                                  <ShieldAlert className="w-5 h-5" />
                                 </div>
                                 <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 block">Active Contract</span>
-                                  <span className="text-sm font-bold text-slate-900">Tier 3 (₹1,40,000)</span>
-                                  <span className="text-[11px] text-slate-500 block">Strict Self-Managed</span>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-800 block">Contract Status</span>
+                                  <span className="text-sm font-bold text-rose-950">Cancelled & Revoked</span>
+                                  <span className="text-[11px] text-rose-700 font-medium block">₹1,40,000 in Liquidation Refund</span>
                                 </div>
                               </div>
 
-                              <div className="bg-blue-50/80 border border-blue-200/80 rounded-2xl p-4 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
                                   <Clock className="w-5 h-5" />
                                 </div>
                                 <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-800 block">Review SLA</span>
-                                  <span className="text-sm font-bold text-slate-900">3 to 7 Days Review</span>
-                                  <span className="text-[11px] text-slate-500 block">Administrative Board Approval</span>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Review SLA</span>
+                                  <span className="text-sm font-bold text-slate-600">Locked / Inactive</span>
+                                  <span className="text-[11px] text-slate-400 block">Privileges Terminated</span>
                                 </div>
                               </div>
 
-                              <div className="bg-purple-50/80 border border-purple-200/80 rounded-2xl p-4 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                                   <UserCheck className="w-5 h-5" />
                                 </div>
                                 <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-800 block">Verified Operator</span>
-                                  <span className="text-sm font-bold text-slate-900">Milan Biswas</span>
-                                  <span className="text-[11px] text-slate-500 block">Node: Indus@Milan@2026</span>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Verified Operator</span>
+                                  <span className="text-sm font-bold text-slate-800">Milan Biswas</span>
+                                  <span className="text-[11px] text-rose-600 font-bold block">Status: Revocation Order Issued</span>
                                 </div>
                               </div>
                             </div>
 
                             {/* Submitted State Banner if active */}
                             {tierUpgradeSubmitted && (
-                              <div className="bg-white rounded-3xl border-2 border-emerald-500/80 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 animate-in fade-in zoom-in-95 duration-300">
+                              <div className="bg-white rounded-3xl border-2 border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 opacity-60">
                                 <div className="flex items-start gap-4">
-                                  <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
-                                    <CheckCircle2 className="w-8 h-8" />
+                                  <div className="w-14 h-14 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
+                                    <Lock className="w-8 h-8" />
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                                      <span className="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
-                                        Application Under Review
+                                      <span className="px-2.5 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-extrabold uppercase tracking-wider">
+                                        Contract Revoked
                                       </span>
                                       <span className="text-xs font-mono text-slate-500">Ref: {upgradeTrackingCode}</span>
                                     </div>
                                     <h4 className="text-lg font-bold text-slate-900">
-                                      Tier Upgrade Request Submitted for Milan Biswas
+                                      Tier Upgrade Request Locked for Milan Biswas
                                     </h4>
                                     <p className="text-xs text-slate-600 mt-1 leading-relaxed max-w-2xl">
-                                      Your upgrade application for <strong className="text-slate-900">{upgradeSubmittedTier === 'tier1' ? 'Tier 1 (PRSPD Protocol — ₹3,00,000)' : 'Tier 2 (RSPD Protocol — ₹2,70,000)'}</strong> is in progress. The administrative and legal compliance board will review your credentials within <strong className="text-emerald-800 font-bold">3 to 7 business days</strong>.
+                                      All upgrade applications are permanently cancelled due to contract revocation.
                                     </p>
-                                    <div className="mt-3 flex items-center gap-4 text-xs font-medium text-slate-500">
-                                      <span>Submitted on: {upgradeSubmissionDate}</span>
-                                      <span>•</span>
-                                      <span>Turnaround: 3 to 7 Days</span>
-                                    </div>
                                   </div>
                                 </div>
                                 <div className="flex sm:flex-col gap-2 shrink-0">
                                   <button
                                     type="button"
-                                    onClick={() => openTierRequestModal(upgradeSubmittedTier)}
-                                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                                    disabled
+                                    className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs opacity-50 cursor-not-allowed pointer-events-none"
                                   >
                                     View Applicant Details
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => setTierUpgradeSubmitted(false)}
-                                    className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-colors cursor-pointer"
+                                    disabled
+                                    className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-400 font-bold text-xs opacity-50 cursor-not-allowed pointer-events-none"
                                   >
                                     Modify Request
                                   </button>
@@ -2557,11 +2645,12 @@ export default function App() {
                                   <div className="mt-3 pt-1">
                                     <button
                                       type="button"
-                                      onClick={() => openTierRequestModal('tier2')}
-                                      className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-98"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="w-full py-2.5 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs shadow-none opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1.5"
                                     >
-                                      <span>Request Tier 2 Upgrade (₹2,70,000)</span>
-                                      <ArrowUpRight className="w-3.5 h-3.5" />
+                                      <Lock className="w-3.5 h-3.5" />
+                                      <span>Upgrade Disabled (Contract Cancelled)</span>
                                     </button>
                                     <p className="text-[9.5px] text-center text-slate-400 mt-1.5 font-medium">
                                       Requires Milan Biswas verification & 3–7 days review
@@ -2652,11 +2741,12 @@ export default function App() {
                                   <div className="mt-3 pt-1">
                                     <button
                                       type="button"
-                                      onClick={() => openTierRequestModal('tier1')}
-                                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-700 hover:to-blue-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-98"
+                                      disabled
+                                      title="Action disabled: Contract has been cancelled"
+                                      className="w-full py-2.5 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs shadow-none opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1.5"
                                     >
-                                      <span>Request Tier 1 Upgrade (₹3,00,000)</span>
-                                      <ArrowUpRight className="w-3.5 h-3.5" />
+                                      <Lock className="w-3.5 h-3.5" />
+                                      <span>Upgrade Disabled (Contract Cancelled)</span>
                                     </button>
                                     <p className="text-[9.5px] text-center text-slate-400 mt-1.5 font-medium">
                                       Requires Milan Biswas verification & 3–7 days review
@@ -2991,26 +3081,28 @@ export default function App() {
                                       <td className="py-4 px-4 text-center bg-indigo-50/60 rounded-b-xl">
                                         <button
                                           type="button"
-                                          onClick={() => openTierRequestModal('tier1')}
-                                          className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1 mx-auto active:scale-95"
+                                          disabled
+                                          title="Action disabled: Contract has been cancelled"
+                                          className="px-3.5 py-2 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs shadow-none opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1 mx-auto"
                                         >
-                                          <span>Request Tier 1</span>
-                                          <ArrowUpRight className="w-3.5 h-3.5" />
+                                          <Lock className="w-3.5 h-3.5" />
+                                          <span>Disabled</span>
                                         </button>
                                       </td>
                                       <td className="py-4 px-4 text-center">
                                         <button
                                           type="button"
-                                          onClick={() => openTierRequestModal('tier2')}
-                                          className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1 mx-auto active:scale-95"
+                                          disabled
+                                          title="Action disabled: Contract has been cancelled"
+                                          className="px-3.5 py-2 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs shadow-none opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1 mx-auto"
                                         >
-                                          <span>Request Tier 2</span>
-                                          <ArrowUpRight className="w-3.5 h-3.5" />
+                                          <Lock className="w-3.5 h-3.5" />
+                                          <span>Disabled</span>
                                         </button>
                                       </td>
-                                      <td className="py-4 px-4 text-center bg-emerald-50/60 rounded-b-xl">
-                                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs inline-block">
-                                          Your Active Tier
+                                      <td className="py-4 px-4 text-center bg-rose-50/60 rounded-b-xl">
+                                        <span className="px-3 py-1.5 rounded-lg bg-rose-100 text-rose-800 font-bold text-xs inline-block">
+                                          Contract Cancelled
                                         </span>
                                       </td>
                                     </tr>
@@ -3347,15 +3439,12 @@ export default function App() {
 
                                       <button
                                         type="button"
-                                        onClick={() => openTierRequestModal(calculatorTier)}
-                                        className={`w-full py-3 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 text-white ${
-                                          calculatorTier === 'tier1'
-                                            ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 shadow-indigo-600/25'
-                                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-purple-600/25'
-                                        }`}
+                                        disabled
+                                        title="Action disabled: Contract has been cancelled"
+                                        className="w-full py-3 rounded-xl font-bold text-xs shadow-none opacity-50 cursor-not-allowed pointer-events-none flex items-center justify-center gap-1.5 bg-slate-200 text-slate-400"
                                       >
-                                        <Sparkles className="w-4 h-4 text-amber-300" />
-                                        <span>Request {calculatorTier === 'tier1' ? 'Tier 1' : 'Tier 2'} (Net {formatINR(calc.netPayable)})</span>
+                                        <Lock className="w-4 h-4" />
+                                        <span>Upgrade Disabled (Contract Cancelled)</span>
                                       </button>
                                     </div>
                                   </div>
@@ -3373,24 +3462,27 @@ export default function App() {
                                   Ready to request an upgrade for Milan Biswas?
                                 </h4>
                                 <p className="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
-                                  Clicking request will open your applicant profile verification. Review all registered credentials, agree to the 3 to 7 days review turnaround, and submit your application.
+                                  Upgrades are currently unavailable because the operator has formally revoked all active contracts.
                                 </p>
                               </div>
                               <div className="flex items-center gap-3 shrink-0 flex-wrap">
                                 <button
                                   type="button"
-                                  onClick={() => openTierRequestModal('tier2')}
-                                  className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all cursor-pointer active:scale-98"
+                                  disabled
+                                  title="Action disabled: Contract has been cancelled"
+                                  className="px-5 py-3 rounded-xl bg-white/10 text-slate-400 font-bold text-xs border border-white/10 opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-1.5"
                                 >
-                                  Request Tier 2 ({formatINR(calculateUpgradeCost('tier2').netPayable)})
+                                  <Lock className="w-3.5 h-3.5" />
+                                  <span>Disabled (Cancelled)</span>
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => openTierRequestModal('tier1')}
-                                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center gap-2 active:scale-98"
+                                  disabled
+                                  title="Action disabled: Contract has been cancelled"
+                                  className="px-6 py-3 rounded-xl bg-white/10 text-slate-400 font-bold text-xs border border-white/10 opacity-50 cursor-not-allowed pointer-events-none flex items-center gap-1.5"
                                 >
-                                  <Sparkles className="w-4 h-4 text-amber-300" />
-                                  <span>Request Tier 1 (Net {formatINR(calculateUpgradeCost('tier1').netPayable)})</span>
+                                  <Lock className="w-3.5 h-3.5" />
+                                  <span>Disabled (Cancelled)</span>
                                 </button>
                               </div>
                             </div>
@@ -3611,9 +3703,11 @@ export default function App() {
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-extrabold transition-colors cursor-pointer text-[10px] shadow shadow-red-500/10"
+                      disabled
+                      title="Action disabled: Contract has been cancelled"
+                      className="px-6 py-2.5 rounded-lg bg-slate-300 text-slate-500 font-extrabold transition-colors opacity-50 cursor-not-allowed pointer-events-none text-[10px]"
                     >
-                      FILE COMPLIANCE ALERT
+                      ALERT DISABLED (REVOKED)
                     </button>
                   </div>
                 </form>
@@ -3746,11 +3840,12 @@ export default function App() {
                   </button>
                   <button
                     type="button"
-                    onClick={handlePrint}
-                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-[#007a3e] hover:bg-[#006030] text-white text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                    disabled
+                    title="Action disabled: Contract has been cancelled"
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-slate-200 text-slate-400 text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 opacity-50 cursor-not-allowed pointer-events-none shadow-none"
                   >
-                    <Printer className="w-3.5 h-3.5 text-white" />
-                    <span>PRINT WARRANT</span>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>PRINT DISABLED (REVOKED)</span>
                   </button>
                 </div>
               </div>
@@ -4564,8 +4659,8 @@ export default function App() {
                 <div className="border-t border-slate-200/50 pt-3 mt-1 flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-400">Operator Status</span>
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-                    <span className="text-xs font-bold text-emerald-700">Active Node</span>
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+                    <span className="text-xs font-bold text-rose-700">Contract Cancelled</span>
                   </div>
                 </div>
               </div>
@@ -4642,22 +4737,22 @@ export default function App() {
                       openRevokeModal();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-bold text-sm text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200/80 bg-rose-50/40 cursor-pointer w-full text-left"
+                    className="flex items-center gap-2 px-3 py-3 rounded-2xl transition-all font-bold text-xs text-rose-700 hover:text-rose-800 hover:bg-rose-100 border border-rose-300 bg-rose-50 cursor-pointer w-full text-left"
                   >
-                    <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />
-                    <span>Revoke Contract</span>
+                    <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>Contract Cancelled (Liquidation Order)</span>
                   </button>
                 </div>
               </nav>
 
-              {/* Mobile Secure Network Alert */}
-              <div className="p-4 border-t border-slate-100 bg-slate-50 mt-auto">
-                <div className="flex items-center gap-2 text-emerald-800 mb-2">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="font-bold text-xs">Indus Secure Network</span>
+              {/* Mobile Revocation Alert */}
+              <div className="p-4 border-t border-slate-100 bg-rose-50/70 mt-auto">
+                <div className="flex items-center gap-2 text-rose-800 mb-1.5">
+                  <ShieldAlert className="w-4 h-4 text-rose-600" />
+                  <span className="font-bold text-xs">Agreement Revoked & Void</span>
                 </div>
-                <p className="text-xs text-emerald-900/70 leading-relaxed font-medium">
-                  Your connection is authenticated. Cryptographic keys and clearances are active.
+                <p className="text-[11px] text-rose-900/80 leading-relaxed font-medium">
+                  All active contracts have been cancelled by the operator. Interactive functions are disabled pending final liquidation disbursement.
                 </p>
               </div>
             </motion.div>
