@@ -335,7 +335,7 @@ export default function App() {
   ];
 
   const calculateRevocationTotals = () => {
-    const selectedTransactions = REVOCATION_TRANSACTIONS.filter((t) => selectedRevokeItems.includes(t.id));
+    const selectedTransactions = REVOCATION_TRANSACTIONS;
     const principalAmount = selectedTransactions.reduce((acc, curr) => acc + curr.amount, 0);
     // Statutory accrued interest (7.5% per annum on refundable capital)
     const interestAmount = Math.round(principalAmount * 0.075);
@@ -394,6 +394,7 @@ export default function App() {
       'court_case_dismissal',
       'gst_file_amount',
       'fssai_license',
+      'allowance_amount',
       'special_request_processing',
     ]);
     setShowRevokeContractModal(true);
