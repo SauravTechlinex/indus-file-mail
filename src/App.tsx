@@ -3,6 +3,7 @@ import { ScrollText, Download,
   Search, 
   ShieldCheck, 
   FileCheck, 
+  FileBadge, 
   Truck, 
   UserCheck, 
   QrCode, 
@@ -43,7 +44,11 @@ import { ScrollText, Download,
   HelpCircle,
   Send,
   Scale,
-  XCircle
+  XCircle,
+  Mail,
+  Landmark,
+  TrendingUp,
+  Wallet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getDeterministicItem, VerifiedItem, RouteNode } from './types';
@@ -56,23 +61,8 @@ declare global {
   }
 }
 
-const verificationProcessSteps = [
-  { name: 'Company agreement', status: 'completed' },
-  { name: 'GST', status: 'completed' },
-  { name: 'License approval', status: 'completed' },
-  { name: 'FSSAI', status: 'completed' },
-  { name: 'Police verification', status: 'completed' },
-  { name: 'State verification', status: 'completed' },
-  { name: 'Company verification', status: 'completed' },
-  { name: 'Court verification', status: 'completed' },
-  { name: 'Bid won', status: 'completed' },
-  { name: 'Government agreement', status: 'remaining' },
-  { name: 'Team ER', status: 'remaining' },
-  { name: 'Meeting', status: 'remaining' },
-  { name: 'Finish', status: 'remaining' }
-];
 
-type SidebarTab = 'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'team' | 'agreement';
+type SidebarTab = 'info' | 'cryptography' | 'routing' | 'document' | 'payments' | 'agreement' | 'license';
 type PaymentSubTab = 'info' | 'details' | 'upgrade';
 
 interface RouteState {
@@ -97,8 +87,11 @@ function parseStateFromPath(pathname: string): RouteState {
   if (path === '/agreement') {
     return { tab: 'agreement', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
   }
+  if (path === '/license') {
+    return { tab: 'license', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+  }
   if (path === '/team') {
-    return { tab: 'team', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
   }
   if (path === '/payments/details') {
     return { tab: 'payments', paymentSub: 'details', showRevokeModal: false, showCertificate: false };
@@ -129,8 +122,8 @@ function getPathForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: 
       return '/document';
     case 'agreement':
       return '/agreement';
-    case 'team':
-      return '/team';
+    case 'license':
+      return '/license';
     case 'payments':
       if (paymentSub === 'details') return '/payments/details';
       if (paymentSub === 'upgrade') return '/payments/upgrade';
@@ -155,8 +148,8 @@ function getTitleForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?:
       return 'Indus Limited | Document Verification - Access Portal';
     case 'agreement':
       return 'Indus Limited | Agreement & Roles - Access Portal';
-    case 'team':
-      return 'Indus Limited | Project Team - Access Portal';
+    case 'license':
+      return 'Indus Limited | Commercial License Assessment - Access Portal';
     case 'payments':
       if (paymentSub === 'details') return 'Indus Limited | Payment Details - Access Portal';
       if (paymentSub === 'upgrade') return 'Indus Limited | Upgrade Tier - Access Portal';
@@ -255,6 +248,13 @@ export default function App() {
   const [isContractCancelled] = useState(true);
   const [isLienAcknowledged, setIsLienAcknowledged] = useState(true);
   const [isLicenseTransferRequested, setIsLicenseTransferRequested] = useState(true);
+  const [licenseReviewSubmitted, setLicenseReviewSubmitted] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactFormSubmitted, setContactFormSubmitted] = useState(false);
+  const [contactCategory, setContactCategory] = useState('License Transfer & Review');
+  const [contactEmail, setContactEmail] = useState('milan.biswas@indus-mail.com');
+  const [contactPhone, setContactPhone] = useState('+91 98300 24819');
+  const [contactMessage, setContactMessage] = useState('');
   const [revokeSuccessMessage, setRevokeSuccessMessage] = useState(true);
   const [selectedRevokeItems, setSelectedRevokeItems] = useState<string[]>([
     'agreement_base',
@@ -748,15 +748,31 @@ export default function App() {
                   Operator Milan Biswas (Indus@Milan@2026) has terminated all commercial agreements.
                 </span>
               </div>
-              <p className="text-[11px] text-rose-200/80 leading-relaxed">
-                Liquidation refund of <strong className="text-white font-bold font-mono">₹2,56,500</strong> is approved (Final interest will be shown in a few days). All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
+              <p className="text-[11px] text-rose-100/90 leading-relaxed">
+                All the details are added on the payment page, please go to the{' '}
+                <button
+                  type="button"
+                  onClick={() => navigateTo('payments', 'info')}
+                  className="font-bold underline text-white hover:text-emerald-300 transition-colors cursor-pointer"
+                >
+                  payment page
+                </button>
+                . All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+          <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto flex-wrap">
             <span className="px-2.5 py-1 rounded-md bg-rose-950/60 border border-rose-500/40 text-[10px] font-bold text-rose-300 uppercase flex items-center gap-1.5">
               <Lock className="w-3 h-3 text-rose-400" /> Functions Locked
             </span>
+            <button
+              type="button"
+              onClick={() => navigateTo('payments', 'info')}
+              className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Payment Page</span>
+            </button>
             <button
               type="button"
               onClick={openRevokeModal}
@@ -937,11 +953,11 @@ export default function App() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigateTo('team')}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'team' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+                  onClick={() => navigateTo('license')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm w-full text-left ${activeSidebarTab === 'license' ? 'bg-emerald-50 text-[#007a3e] font-bold' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
                 >
-                  <Users className="w-4 h-4" />
-                  <span>Team</span>
+                  <FileBadge className="w-4 h-4" />
+                  <span>License</span>
                 </button>
                 <button
                   type="button"
@@ -950,7 +966,7 @@ export default function App() {
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Payments</span>
-                  {!paymentSuccessId && (
+                  {!isContractCancelled && !paymentSuccessId && (
                     <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
                       DUE
                     </span>
@@ -1004,7 +1020,7 @@ export default function App() {
               {selectedItem && (
                 <>
                   {/* Outstanding Payment Alert Tracker */}
-                  {!paymentSuccessId && (
+                  {!isContractCancelled && !paymentSuccessId && (
                     <div className="bg-red-50/90 backdrop-blur border border-red-200/60 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                       <div className="flex flex-col gap-1 text-sm text-red-800">
@@ -1062,47 +1078,11 @@ export default function App() {
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="font-bold text-rose-950 text-sm">Agreement Revocation & Liquidation Active</span>
                             <p className="text-rose-800 leading-relaxed font-medium">
-                              The operator has formally cancelled all agreements and covenants. Settlement liquidation voucher of <strong>₹2,56,500</strong> has been generated (Final interest will be shown in a few days). All operational and action functions have been disabled.
+                              The operator has formally cancelled all agreements and covenants. The final interest and amount are shown, see from the payment page (Total Net Refund: <strong>₹2,86,666.30</strong> — Principal: ₹2,56,500.00 minus ₹22,000.00 for RSS, GST, FSSAI licenses in your name = ₹2,34,500.00 + Simple Interest: ₹52,166.30). No liquor or counter license will come. All operational and action functions have been disabled.
                             </p>
                           </div>
                         </div>
 
-                        {/* Compact Process Tracker Section */}
-                        <div className="w-full border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/50 pb-3">
-                            <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                              <Layers className="w-4 h-4 text-emerald-600" />
-                              Registration Process
-                            </h4>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 sm:w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-500 rounded-full w-[69%]" />
-                              </div>
-                              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700">
-                                9 / 13 Completed
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2">
-                            {verificationProcessSteps.map((step, idx) => {
-                              const isCompleted = step.status === 'completed';
-                              return (
-                                <div 
-                                  key={idx} 
-                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border shadow-sm transition-all ${
-                                    isCompleted 
-                                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60 shadow-emerald-500/5' 
-                                      : 'bg-white text-slate-400 border-slate-200 border-dashed'
-                                  }`}
-                                >
-                                  {isCompleted ? <Check className="w-3 h-3 stroke-[3]" /> : <Clock className="w-3 h-3" />}
-                                  {step.name}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
 
                         <div className="flex items-center justify-between border-b border-slate-200/50 pb-4 mt-2">
                           <h3 className="text-lg font-display font-bold text-slate-900">Owner Details</h3>
@@ -1345,26 +1325,556 @@ export default function App() {
                       </div>
                     )}
 
-                    {activeSidebarTab === 'team' && (
+                    {/* TAB: LICENSE */}
+                    {activeSidebarTab === 'license' && (
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
-                          <h3 className="text-lg font-display font-bold text-slate-900">Project Team</h3>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                          {['Wasim Kha', 'Bir Sanyal', 'Koel Pande', 'Debashis Sarkar', 'Subrata Prajapati', 'Prasit Sanyal'].map((member, idx) => (
-                            <div key={idx} className="flex items-center gap-3 py-3 border-b border-slate-100">
-                              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
-                                {member.charAt(0)}
-                              </div>
-                              <span className="text-sm font-bold text-slate-800">{member}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-4 py-4 flex items-start gap-3">
-                          <Users className="w-5 h-5 text-slate-400 mt-0.5" />
-                          <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                            <strong>Note:</strong> Additional team members will be allocated and added to this roster at a later stage as the project progresses.
+                        {/* Page Header */}
+                        <div className="flex flex-col gap-1 border-b border-slate-200/60 pb-5">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <h3 className="text-xl font-display font-bold text-slate-900">Commercial License Assessment & Title Transfer</h3>
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 shadow-xs flex items-center gap-1.5">
+                              <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+                              Transfer Status: Ineligible
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500">
+                            Comprehensive statutory review on commercial excise liquor & trade license transfer under Kolkata Municipal Corporation jurisdiction.
                           </p>
+                        </div>
+
+                        {/* Interactive Review Resubmission Feedback Banner */}
+                        {licenseReviewSubmitted && (
+                          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-3 shadow-xs animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-start gap-3">
+                              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-bold text-emerald-950 text-xs">Review Request Resubmitted to Legal Directorate</span>
+                                <p className="text-xs text-emerald-800 leading-relaxed font-medium">
+                                  Your request to re-evaluate the license title transfer under applicant <strong>Milan Biswas</strong> has been lodged under statutory docket <strong>#REV-LIC-2026-WB79</strong>. Due to mandatory Municipal Corporation capital reserves, the statutory deficit remains non-transferable.
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              type="button" 
+                              onClick={() => setLicenseReviewSubmitted(false)}
+                              className="text-emerald-700 hover:text-emerald-900 p-1 rounded-md cursor-pointer"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Primary Notice Box (Declined Transfer Declaration) */}
+                        <div className="bg-gradient-to-br from-rose-50/80 via-white to-amber-50/30 rounded-3xl border border-rose-200/90 p-6 sm:p-8 shadow-[0_8px_30px_rgb(244,63,94,0.06)] flex flex-col gap-6 relative overflow-hidden">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-rose-100 pb-5">
+                            <div className="flex items-center gap-3.5">
+                              <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 shadow-inner border border-rose-200">
+                                <FileBadge className="w-6 h-6 stroke-[2.2]" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-[10px] font-black uppercase tracking-wider bg-rose-950 text-rose-200 px-2 py-0.5 rounded">
+                                    Official Statutory Determination
+                                  </span>
+                                  <span className="text-xs text-rose-800 font-bold">
+                                    Applicant: Milan Biswas (Indus@Milan@2026)
+                                  </span>
+                                </div>
+                                <h3 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 mt-1">
+                                  Unable to Transfer License to Your Name
+                                </h3>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setLicenseReviewSubmitted(true)}
+                              className="px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              <span>Resend Review</span>
+                            </button>
+                          </div>
+
+                          <div className="text-sm text-slate-700 leading-relaxed space-y-3 font-medium">
+                            <div className="bg-white/95 p-4 sm:p-5 rounded-2xl border border-rose-200 text-slate-800 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 rounded-xl bg-rose-100 text-rose-700 shrink-0 mt-0.5">
+                                  <AlertTriangle className="w-5 h-5" />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                                    We are sorry that we cannot transfer the license, you can also review it, and for other help, please contact us on the contact form.
+                                  </p>
+                                  <p className="text-xs text-slate-600 leading-relaxed">
+                                    <strong className="text-rose-900 font-bold">Statutory Notice:</strong> User agreement has been canceled, you want to make your license in your name, but after reviewing it thoroughly, we are unable to transfer the license to your name.
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowContactModal(true);
+                                  setContactFormSubmitted(false);
+                                }}
+                                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
+                              >
+                                <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Contact Form</span>
+                              </button>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed">
+                              This statutory determination is based on mandatory West Bengal state excise regulations and municipal corporation capital adequacy laws governing commercial bar, restaurant, and hospitality trade licenses situated in metropolitan Kolkata.
+                            </p>
+                          </div>
+
+                          {/* STATUTORY LICENSING SCOPE & PERSONAL TRANSFER ENTITLEMENTS */}
+                          <div className="bg-white rounded-2xl border-2 border-emerald-500/30 p-3.5 sm:p-6 shadow-xs flex flex-col gap-3.5 sm:gap-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
+                              <div className="flex items-start sm:items-center gap-3">
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0 mt-0.5 sm:mt-0">
+                                  <BadgeCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                    <span className="text-[9.5px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                      Statutory Licensing Directive
+                                    </span>
+                                    <span className="text-[11px] sm:text-xs text-slate-600 font-bold">
+                                      Applicant: Milan Biswas (Indus@Milan@2026)
+                                    </span>
+                                  </div>
+                                  <h4 className="text-sm sm:text-base font-bold text-slate-900 mt-1 leading-snug">
+                                    Personal License Entitlement & Financial Deduction Ledger
+                                  </h4>
+                                </div>
+                              </div>
+                              <div className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-mono font-bold text-rose-800 flex items-center justify-between sm:justify-start gap-2 shrink-0 self-stretch sm:self-auto">
+                                <span>3 Licenses Cost:</span>
+                                <strong className="text-rose-900 font-black">₹22,000.00 (Minus)</strong>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+                              {/* Left Box: Licenses that WILL come in your name */}
+                              <div className="p-3 sm:p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 flex flex-col justify-between gap-3">
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2 text-emerald-950 font-bold text-xs uppercase tracking-wider">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <span>Licenses That WILL Come In Your Name (Milan Biswas)</span>
+                                  </div>
+                                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                                    All these licenses — <strong className="text-slate-900">RSS, GST, FSSAI</strong> — will come in your name as legally bound statutory trade registrations:
+                                  </p>
+                                  <div className="space-y-2 pt-1">
+                                    {/* RSS License Item */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg bg-white border border-emerald-100 text-xs font-medium text-slate-800 shadow-2xs">
+                                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                        <strong className="text-slate-900 text-xs">RSS License</strong>
+                                        <span className="text-slate-500 text-[10.5px] sm:text-[11px]">(Registrar of Societies / Trade Registry)</span>
+                                      </div>
+                                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 shrink-0 self-start sm:self-auto whitespace-nowrap">
+                                        Will Come In Your Name
+                                      </span>
+                                    </div>
+
+                                    {/* GST Registration Item */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg bg-white border border-emerald-100 text-xs font-medium text-slate-800 shadow-2xs">
+                                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                        <strong className="text-slate-900 text-xs">GST Registration</strong>
+                                        <span className="text-slate-500 text-[10.5px] sm:text-[11px]">(Goods and Services Tax Authority)</span>
+                                      </div>
+                                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 shrink-0 self-start sm:self-auto whitespace-nowrap">
+                                        Will Come In Your Name
+                                      </span>
+                                    </div>
+
+                                    {/* FSSAI License Item */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg bg-white border border-emerald-100 text-xs font-medium text-slate-800 shadow-2xs">
+                                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                        <strong className="text-slate-900 text-xs">FSSAI License</strong>
+                                        <span className="text-slate-500 text-[10.5px] sm:text-[11px]">(Food Safety and Standards Authority)</span>
+                                      </div>
+                                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60 shrink-0 self-start sm:self-auto whitespace-nowrap">
+                                        Will Come In Your Name
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="p-2 sm:p-2.5 rounded-lg bg-emerald-100/70 border border-emerald-300 flex items-center justify-between text-xs font-mono font-bold text-emerald-950 flex-wrap gap-2">
+                                  <span>Total Package Cost for 3 Licenses:</span>
+                                  <span className="text-sm font-black font-mono">₹22,000.00</span>
+                                </div>
+                              </div>
+
+                              {/* Right Box: Licenses that will NOT come in your name */}
+                              <div className="p-3 sm:p-4 rounded-xl bg-rose-50/60 border border-rose-200 flex flex-col justify-between gap-3">
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2 text-rose-950 font-bold text-xs uppercase tracking-wider">
+                                    <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                                    <span>Licenses That Will NOT Come In Your Name</span>
+                                  </div>
+                                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                                    Commercial liquor and excise authorizations cannot be issued or transferred into your name:
+                                  </p>
+                                  <div className="space-y-2 pt-1">
+                                    {/* Liquor License Item */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg bg-white border border-rose-100 text-xs font-medium text-slate-800 shadow-2xs">
+                                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+                                        <strong className="text-slate-900 text-xs">Liquor License</strong>
+                                        <span className="text-slate-500 text-[10.5px] sm:text-[11px]">(Bar & Commercial Liquor Authorization)</span>
+                                      </div>
+                                      <span className="text-[10px] sm:text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200/60 shrink-0 self-start sm:self-auto whitespace-nowrap">
+                                        Will NOT Come
+                                      </span>
+                                    </div>
+
+                                    {/* Counter License Item */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg bg-white border border-rose-100 text-xs font-medium text-slate-800 shadow-2xs">
+                                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                        <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+                                        <strong className="text-slate-900 text-xs">Counter License</strong>
+                                        <span className="text-slate-500 text-[10.5px] sm:text-[11px]">(Excise Retail Counter Authorization)</span>
+                                      </div>
+                                      <span className="text-[10px] sm:text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200/60 shrink-0 self-start sm:self-auto whitespace-nowrap">
+                                        Will NOT Come
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="p-2.5 rounded-lg bg-white border border-rose-200/80 text-[11px] text-rose-900 leading-relaxed font-medium">
+                                  <strong>Reason for Liquor & Counter License:</strong> Obtaining commercial liquor and counter rights in Kolkata Municipal Corporation requires an expenditure of <strong>₹16,50,000</strong>. Because user contributed capital is significantly lower, neither liquor license nor counter license will come.
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Calculation Minus Notice */}
+                            <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 text-xs">
+                              <div className="flex items-start gap-2.5">
+                                <Calculator className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                                <div className="space-y-0.5">
+                                  <span className="font-bold text-slate-900 block text-xs">
+                                    Financial Calculation Updated Everywhere (Minus ₹22,000):
+                                  </span>
+                                  <p className="text-slate-600 leading-relaxed font-medium text-[11px] sm:text-xs">
+                                    The total cost of these three licenses (<strong>₹22,000</strong>) is subtracted from the principal and interest: Gross Principal (<strong>₹2,56,500.00</strong>) minus License Cost (<strong>₹22,000.00</strong>) = Net Principal <strong className="text-slate-900 font-mono">₹2,34,500.00</strong> + Simple Interest <strong className="text-emerald-700 font-mono">₹52,166.30</strong> = Net Remittance <strong className="text-emerald-950 font-mono font-bold">₹2,86,666.30</strong>. This calculation is updated everywhere across all tabs and vouchers.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 4 KPI Financial Overview Cards */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                            {/* Card 1: User's Contributed Capital */}
+                            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                              <div className="flex items-center justify-between text-slate-400 mb-2">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Your Total Paid Amount</span>
+                                <Receipt className="w-4 h-4 text-slate-400" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-black text-slate-900 tracking-tight">₹2,56,500</div>
+                                <div className="text-[11px] font-semibold text-slate-600 mt-1 flex flex-col gap-0.5">
+                                  <span>• Base Capital: ₹2,06,500</span>
+                                  <span>• 1.5 Cr Special Fee: ₹50,000</span>
+                                  <span className="text-rose-600 font-bold">• Minus 3 Licenses: -₹22,000</span>
+                                </div>
+                              </div>
+                              <div className="mt-3 pt-2 border-t border-slate-100 text-[10px] text-slate-500 font-semibold">
+                                Net Principal: <strong className="text-slate-900 font-mono">₹2,34,500.00</strong>
+                              </div>
+                            </div>
+
+                            {/* Card 2: Actual Value with Interest (Net of 22k) */}
+                            <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-xs flex flex-col justify-between">
+                              <div className="flex items-center justify-between text-emerald-600 mb-2">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Net Total With Interest</span>
+                                <Sparkles className="w-4 h-4 text-emerald-600" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-black text-emerald-950 tracking-tight">₹2,86,666.30</div>
+                                <div className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 w-max border border-emerald-200/60">
+                                  +₹52,166.30 Accrued Interest
+                                </div>
+                              </div>
+                              <div className="mt-3 pt-2 border-t border-emerald-100 text-[10px] text-emerald-800/80 font-medium">
+                                Net of ₹22,000 for RSS, GST, FSSAI licenses
+                              </div>
+                            </div>
+
+                            {/* Card 3: Company License Cost (Municipal Corp) */}
+                            <div className="bg-white p-5 rounded-2xl border border-rose-200 shadow-xs flex flex-col justify-between">
+                              <div className="flex items-center justify-between text-rose-600 mb-2">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800">Company License Expense</span>
+                                <Building2 className="w-4 h-4 text-rose-600" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-black text-rose-950 tracking-tight">₹16,50,000</div>
+                                <div className="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md mt-1 w-max border border-rose-200/60">
+                                  Municipal Corp / Kolkata
+                                </div>
+                              </div>
+                              <div className="mt-3 pt-2 border-t border-rose-100 text-[10px] text-rose-800/80 font-medium">
+                                Spent by company to create bar license
+                              </div>
+                            </div>
+
+                            {/* Card 4: Net Capital Deficit */}
+                            <div className="bg-rose-50/80 p-5 rounded-2xl border border-rose-300 shadow-xs flex flex-col justify-between">
+                              <div className="flex items-center justify-between text-rose-700 mb-2">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-900">Capital Shortfall / Deficit</span>
+                                <Scale className="w-4 h-4 text-rose-700" />
+                              </div>
+                              <div>
+                                <div className="text-2xl font-black text-rose-950 tracking-tight">-₹13,93,500</div>
+                                <div className="text-[11px] font-bold text-rose-800 bg-white/80 px-2 py-0.5 rounded-md mt-1 w-max border border-rose-200">
+                                  No Liquor or Counter License
+                                </div>
+                              </div>
+                              <div className="mt-3 pt-2 border-t border-rose-200 text-[10px] text-rose-900/80 font-medium">
+                                Deficit prohibiting bar/counter transfer
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Jurisdictional Context: Why does creating this license cost ₹16,50,000? */}
+                        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col gap-4">
+                          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                            <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
+                              <Building2 className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="text-base font-bold text-slate-900">
+                                Why Did the Company Spend ₹16,50,000 INR to Create the License?
+                              </h4>
+                              <p className="text-xs text-slate-500">
+                                Statutory territorial jurisdiction: Municipal Corporation / Kolkata metropolitan excise zone.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-xs text-slate-600 leading-relaxed space-y-3 font-medium">
+                            <p>
+                              The commercial premises and commercial liquor/trade authorization fall directly within the jurisdiction of the <strong className="text-slate-900 font-bold">Municipal Corporation / Kolkata (KMC)</strong>. In West Bengal, commercial licensing costs are legally segmented by civic tier:
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase text-slate-400">Civic Tier Jurisdiction</span>
+                                <span className="text-xs font-bold text-slate-800">Kolkata Municipal Corporation</span>
+                                <p className="text-[11px] text-slate-500 mt-0.5">Highest statutory bracket under metropolitan commercial zoning.</p>
+                              </div>
+                              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase text-slate-400">Excise & Regulatory Pool</span>
+                                <span className="text-xs font-bold text-slate-800">State Statutory Security</span>
+                                <p className="text-[11px] text-slate-500 mt-0.5">Mandatory ₹5,00,000 state treasury security deposit.</p>
+                              </div>
+                              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase text-slate-400">Company Incurred Outlay</span>
+                                <span className="text-xs font-bold text-slate-800">₹16,50,000 Total Outlay</span>
+                                <p className="text-[11px] text-slate-500 mt-0.5">Paid upfront by Indus Limited to obtain corporate license rights.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Statutory Cost Comparison Table */}
+                        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col gap-5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div>
+                              <h4 className="text-base font-bold text-slate-900">
+                                Licensing Cost Comparison for Any Common Citizen
+                              </h4>
+                              <p className="text-xs text-slate-500">
+                                Standard statutory comparison schedule demonstrating the exact cost required for any individual to obtain this license.
+                              </p>
+                            </div>
+                            <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-200/70 w-max">
+                              Official Statutory Tariff Schedule
+                            </span>
+                          </div>
+
+                          <div className="overflow-x-auto rounded-xl border border-slate-200/80">
+                            <table className="w-full text-left text-xs border-collapse">
+                              <thead>
+                                <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
+                                  <th className="py-3.5 px-4 sm:px-6">Cost</th>
+                                  <th className="py-3.5 px-4 sm:px-6">Municipality / Notified Area</th>
+                                  <th className="py-3.5 px-4 sm:px-6 bg-emerald-50/70 text-emerald-900 border-l border-emerald-100">
+                                    <div className="flex items-center gap-2">
+                                      <span>Municipal Corporation</span>
+                                      <span className="text-[9px] bg-[#007a3e] text-white px-2 py-0.5 rounded-full font-extrabold uppercase">
+                                        Kolkata Active
+                                      </span>
+                                    </div>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                  <td className="py-3.5 px-4 sm:px-6 font-semibold text-slate-900">Application Fee</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-bold text-slate-700">₹50,000</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-extrabold text-emerald-950 bg-emerald-50/30 border-l border-emerald-100">
+                                    ₹1,50,000
+                                  </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                  <td className="py-3.5 px-4 sm:px-6 font-semibold text-slate-900">Annual License Fee</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-bold text-slate-700">₹6,00,000</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-extrabold text-emerald-950 bg-emerald-50/30 border-l border-emerald-100">
+                                    ₹10,00,000
+                                  </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                  <td className="py-3.5 px-4 sm:px-6 font-semibold text-slate-900">Security Deposit</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-bold text-slate-700">₹2,00,000</td>
+                                  <td className="py-3.5 px-4 sm:px-6 font-mono font-extrabold text-emerald-950 bg-emerald-50/30 border-l border-emerald-100">
+                                    ₹5,00,000
+                                  </td>
+                                </tr>
+                                <tr className="bg-slate-100/60 font-bold border-t-2 border-slate-300">
+                                  <td className="py-4 px-4 sm:px-6 text-slate-900 text-sm">Initial Total</td>
+                                  <td className="py-4 px-4 sm:px-6 font-mono text-base font-black text-slate-900">₹8,50,000</td>
+                                  <td className="py-4 px-4 sm:px-6 font-mono text-lg font-black text-emerald-900 bg-emerald-100/70 border-l border-emerald-200">
+                                    ₹16,50,000
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Government Authority Verification & Payment Interface Reference */}
+                          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                            <div className="flex items-start gap-3">
+                              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-bold text-slate-900">Official Government Authority Sourced Data</span>
+                                <p className="text-slate-600 leading-relaxed font-medium">
+                                  All this information has been taken directly from the government authority (<strong className="text-slate-800">Directorate of Excise, Government of West Bengal</strong>). From here, all official payment interfaces, statutory fee schedules, and regulatory deposit structures can be directly viewed and analyzed by the user.
+                                </p>
+                              </div>
+                            </div>
+                            <a
+                              href="https://excise.wb.gov.in/UserLogin/Fees_Required_Local_Sale.pdf"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 shrink-0 self-start sm:self-auto cursor-pointer active:scale-95 group"
+                            >
+                              <Globe className="w-3.5 h-3.5" />
+                              <span>Visit Government Site</span>
+                              <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Calculation & Transfer Rejection Rationale */}
+                        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-rose-950 text-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-700/80 flex flex-col gap-6 relative overflow-hidden">
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-rose-300 bg-rose-950/80 px-2.5 py-1 rounded w-max border border-rose-500/40">
+                              Financial Deficit Reconciliation
+                            </span>
+                            <h4 className="text-lg sm:text-xl font-display font-bold text-white mt-1">
+                              Mathematical Reconciliation & Statutory Transfer Bar
+                            </h4>
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                              Because the amount paid by the user is significantly less than the statutory Municipal Corporation licensing expense, the license cannot be transferred.
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Calculation Details */}
+                            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 flex flex-col gap-3">
+                              <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
+                                Statutory Outlay vs. Applicant Contribution
+                              </span>
+                              <div className="space-y-2 text-xs">
+                                <div className="flex justify-between items-center text-slate-300">
+                                  <span>1. Municipal Corporation Bar/Counter Cost:</span>
+                                  <span className="font-mono font-bold text-white">₹16,50,000.00</span>
+                                </div>
+                                <div className="flex justify-between items-center text-slate-300">
+                                  <span>2. Gross User Contributed Capital:</span>
+                                  <span className="font-mono font-bold text-emerald-400">₹2,56,500.00</span>
+                                </div>
+                                <div className="flex justify-between items-center text-slate-300">
+                                  <span>3. Less 3 Licenses in User's Name (RSS, GST, FSSAI):</span>
+                                  <span className="font-mono font-bold text-rose-400">- ₹22,000.00</span>
+                                </div>
+                                <div className="flex justify-between items-center text-slate-300">
+                                  <span>4. Net Principal Balance:</span>
+                                  <span className="font-mono font-bold text-emerald-300">₹2,34,500.00</span>
+                                </div>
+                                <div className="flex justify-between items-center text-slate-300">
+                                  <span>5. Plus Accrued Simple Interest (17.02% p.a.):</span>
+                                  <span className="font-mono font-bold text-emerald-400">+ ₹52,166.30</span>
+                                </div>
+                                <div className="pt-2 border-t border-white/15 flex justify-between items-center text-xs font-bold text-white">
+                                  <span>Final Net Refundable Disbursement:</span>
+                                  <span className="font-mono text-emerald-300 text-sm">₹2,86,666.30</span>
+                                </div>
+                                <div className="flex justify-between items-center text-[11px] text-amber-300 pt-1">
+                                  <span>(RSS, GST, FSSAI come in your name • No liquor/counter license):</span>
+                                  <span className="font-mono font-bold">-₹22,000 deducted</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Deficit Result Box */}
+                            <div className="bg-rose-950/50 backdrop-blur-sm rounded-2xl p-5 border border-rose-500/40 flex flex-col justify-between gap-3">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs font-bold text-rose-300 uppercase tracking-wider">
+                                  Net Remaining Capital Deficit
+                                </span>
+                                <div className="text-3xl font-black text-rose-200 font-mono tracking-tight mt-1">
+                                  -₹13,93,500.00
+                                </div>
+                                <span className="text-[11px] text-rose-300 font-medium">
+                                  (Shortfall against ₹16,50,000 Kolkata Municipal Corporation bar & counter liquor license)
+                                </span>
+                              </div>
+                              <div className="p-3 bg-black/30 rounded-xl border border-rose-500/30 text-[11px] text-rose-200/90 leading-relaxed font-medium">
+                                RSS, GST, and FSSAI licenses (₹22,000) are legally approved in Milan Biswas's name, but <strong>no liquor or counter license will come</strong> due to municipal capital shortfall.
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 leading-relaxed font-medium">
+                            <strong className="text-white">Conclusion:</strong> All these licenses — <strong>RSS, GST, FSSAI</strong> — will come in your name, but <strong>no liquor or counter license will come</strong>. The total cost of these three licenses (<strong>₹22,000</strong>) is deducted from the principal and interest, giving a final net settlement payout of <strong className="text-emerald-300 font-mono font-bold">₹2,86,666.30</strong> (Net Principal: ₹2,34,500.00 + Simple Interest: ₹52,166.30). This calculation is updated everywhere.
+                          </div>
+                        </div>
+
+                        {/* Statutory Assistance & Contact Form Card */}
+                        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-700 shrink-0 border border-emerald-200/60">
+                              <HelpCircle className="w-6 h-6" />
+                            </div>
+                            <div className="space-y-1">
+                              <h4 className="text-sm sm:text-base font-bold text-slate-900">
+                                Official Administrative & Support Desk
+                              </h4>
+                              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                                We are sorry that we cannot transfer the license, you can also review it, and for other help, please contact us on the contact form.
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowContactModal(true);
+                              setContactFormSubmitted(false);
+                            }}
+                            className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
+                          >
+                            <Mail className="w-4 h-4" />
+                            <span>Contact Form</span>
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1377,7 +1887,7 @@ export default function App() {
                           <div className="flex flex-col gap-1 text-xs">
                             <span className="font-bold text-rose-950 text-sm">Transactions & Accounts Frozen</span>
                             <p className="text-rose-800 leading-relaxed font-medium">
-                              All payment gateways and contract accounts are deactivated because the contract has been cancelled. A complete liquidation refund voucher of <strong>₹2,56,500</strong> has been generated (Final interest will be shown in a few days). No new payments or upgrades can be processed.
+                              All payment gateways and contract accounts are deactivated because the contract has been cancelled. A complete liquidation settlement of <strong>₹2,56,500.00</strong> minus <strong>₹22,000.00</strong> for 3 personal licenses (RSS, GST, FSSAI in your name; no liquor or counter license) with accrued simple interest of <strong>₹52,166.30</strong> (Total Net Disbursement: <strong>₹2,86,666.30</strong>) has been finalized and approved. Bank account transfer will be started very soon.
                             </p>
                           </div>
                         </div>
@@ -1410,7 +1920,7 @@ export default function App() {
                             >
                               <CreditCard className="w-3.5 h-3.5" />
                               <span>Info</span>
-                              {!paymentSuccessId && (
+                              {!isContractCancelled && !paymentSuccessId && (
                                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                               )}
                             </button>
@@ -1454,196 +1964,448 @@ export default function App() {
                           <div className="flex flex-col gap-6 animate-in fade-in duration-300">
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Payment Status & Overview</span>
-                              {!paymentSuccessId && (
-                                <div className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-100/50">
-                                  <AlertTriangle className="w-3.5 h-3.5" />
-                                  Action Required
-                                </div>
-                              )}
-                            </div>
-
-                            {paymentSuccessId && (
-                              <div className="flex flex-col gap-5 mb-2">
-                                <div className="flex items-center gap-3 bg-emerald-50/80 text-emerald-800 p-4 rounded-2xl border border-emerald-100/60 font-semibold shadow-sm animate-in fade-in slide-in-from-top-2">
-                                  <Check className="w-5 h-5 text-emerald-600 shrink-0 stroke-[3]" />
-                                  You have no outstanding payments.
-                                </div>
-                                
-                                <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-emerald-100/80 flex flex-col gap-4 w-full shadow-[0_8px_30px_rgb(16,185,129,0.12)] animate-in fade-in slide-in-from-top-4">
-                                  <div className="flex flex-col gap-3">
-                                    <div className="flex justify-between items-end">
-                                      <div className="flex flex-col text-left gap-1">
-                                        <span className="text-sm font-bold text-slate-900 tracking-tight">Court Agreement Progress</span>
-                                        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Active Processing</span>
-                                      </div>
-                                      <span className="text-2xl font-black text-emerald-600 tracking-tighter">98%</span>
-                                    </div>
-                                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-inset ring-slate-200/50">
-                                      <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full relative overflow-hidden" style={{ width: '98%' }}>
-                                        <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></div>
-                                      <p className="text-xs font-semibold text-emerald-700">Processing legal documentation and verifying signatures...</p>
-                                    </div>
-                                    <div className="mt-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50 flex items-start gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
-                                      <p className="text-[11px] font-medium text-blue-800 leading-relaxed">
-                                        <strong className="font-bold">Status Update:</strong> The owner whose signature is still pending is currently at the Barasat Court.
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Status Card */}
-                            <div className="border-b border-slate-200 pb-6 mb-2 flex flex-col gap-4">
-                              <div className="flex items-center gap-2 text-emerald-800 font-bold text-lg">
-                                <Check className="w-5 h-5 text-emerald-600" />
-                                Bid Successfully Won
-                              </div>
-                              <div className="text-sm text-emerald-800 leading-relaxed font-medium">
-                                Congratulations, <span className="font-bold text-emerald-900">Milan Biswas</span>! You have successfully won the bid. 
-                                <ul className="mt-3 space-y-2 list-disc list-inside">
-                                  <li>The agreed total amount is <span className="font-bold text-emerald-900">₹1,40,000 INR</span> (which is fully refundable after the business commences).</li>
-                                  <li>A preliminary payment of <span className="font-bold text-emerald-900">₹13,000 INR</span> has already been received and verified.</li>
-                                  <li>Profit Sharing: The company will take <span className="font-bold text-emerald-900">30%</span>, and the owner will receive <span className="font-bold text-emerald-900">70%</span>.</li>
-                                </ul>
+                              <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-rose-200">
+                                <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+                                Contract Cancelled & Closed
                               </div>
                             </div>
 
-                            {/* Refund Status Card */}
-                            <div className="border-b border-slate-200 pb-6 mb-2 flex flex-col gap-3">
-                              <h4 className="text-xs font-bold text-slate-600 border-b border-slate-200/60 pb-2">Refund Status Tracker</h4>
-                              <div className="flex flex-col gap-3 mt-1">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                  <span className="text-sm font-semibold text-slate-700">Agreement Amount (₹1,40,000)</span>
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-xs font-semibold shadow-sm w-max">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    Not started
+                            {/* Cancelled Contract & Settlement Overview */}
+                            <div className="bg-gradient-to-br from-rose-50/70 via-white to-rose-50/40 rounded-3xl border border-rose-200/90 p-6 sm:p-8 shadow-[0_8px_30px_rgb(244,63,94,0.06)] flex flex-col gap-6 relative overflow-hidden">
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-rose-100 pb-5">
+                                <div className="flex items-center gap-3.5">
+                                  <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 shadow-inner border border-rose-200">
+                                    <ShieldAlert className="w-6 h-6 stroke-[2.2]" />
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="text-[10px] font-black uppercase tracking-wider bg-rose-950 text-rose-200 px-2 py-0.5 rounded">
+                                        Agreement Terminated
+                                      </span>
+                                      <span className="text-xs text-rose-800 font-bold">
+                                        Operator Action: Indus@Milan@2026
+                                      </span>
+                                    </div>
+                                    <h3 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 mt-1">
+                                      Commercial Contract & Payment Records Terminated
+                                    </h3>
                                   </div>
                                 </div>
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                  <span className="text-sm font-semibold text-slate-700">Bidding Amount (₹13,000)</span>
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 text-xs font-semibold shadow-sm w-max">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    Not started
+                                <div className="px-3.5 py-1.5 rounded-xl bg-rose-100/80 border border-rose-200 text-rose-800 text-xs font-black flex items-center gap-1.5 shadow-2xs self-start sm:self-auto">
+                                  <Lock className="w-3.5 h-3.5 text-rose-600" />
+                                  Functions Inactive
+                                </div>
+                              </div>
+
+                              <div className="text-sm text-slate-600 leading-relaxed space-y-2 font-medium">
+                                <p>
+                                  All active contracts, bidding awards, court processing workflows, and payment schedules have been completely removed because the contract was revoked by the user/operator (<strong className="text-slate-900 font-bold">Milan Biswas</strong>).
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  There are no outstanding operational payments or pending court procedures. All interactive functions, transfers, and transactions are permanently disabled.
+                                </p>
+                              </div>
+
+                              {/* Approved Liquidation Settlement Card */}
+                              <div className="bg-white rounded-2xl border border-rose-200/80 p-5 sm:p-6 shadow-xs flex flex-col gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    Consolidated Settlement Liquidation Order
+                                  </span>
+                                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200 w-max">
+                                    Disbursement Approved
+                                  </span>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+                                  <div>
+                                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Approved Settlement (Net Principal + Simple Interest)</span>
+                                    <div className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-0.5 font-mono">
+                                      ₹2,86,666.30 <span className="text-xs font-semibold text-slate-500">INR</span>
+                                    </div>
+                                    <div className="text-xs text-slate-600 font-semibold mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                                      <span>Gross Principal: <strong className="text-slate-900">₹2,56,500.00</strong></span>
+                                      <span>•</span>
+                                      <span>Less 3 Licenses (RSS, GST, FSSAI): <strong className="text-rose-600">-₹22,000.00</strong></span>
+                                      <span>•</span>
+                                      <span>Net Principal: <strong className="text-slate-900">₹2,34,500.00</strong></span>
+                                      <span>•</span>
+                                      <span>Simple Interest (17.02% p.a.): <strong className="text-emerald-700">+₹52,166.30</strong></span>
+                                    </div>
                                   </div>
+                                  <div className="flex flex-col items-start sm:items-end gap-1.5">
+                                    <div className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1.5 w-max">
+                                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                      Bank Transfer Starting Very Soon
+                                    </div>
+                                    <span className="text-[10px] text-slate-500 font-medium">Net Remittance: ₹2,86,666.30 (RSS, GST, FSSAI in your name; no bar/counter)</span>
+                                  </div>
+                                </div>
+
+                                {/* Items Included Grid */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+                                  {REVOCATION_TRANSACTIONS.map((tx) => (
+                                    <div key={tx.id} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex flex-col justify-between">
+                                      <span className="text-[10px] text-slate-400 font-bold truncate block">{tx.title}</span>
+                                      <span className="text-xs font-bold text-slate-800 mt-1">{formatINR(tx.amount)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/70 text-xs text-amber-900 leading-relaxed font-medium">
+                                  <strong>Note:</strong> If the application is made to change the license to your own name, that matter may take some more time.
+                                </div>
+
+                                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+                                  <span className="text-xs text-slate-500 font-medium">
+                                    Ref: IL-REVOKE-2026-WB7983 • Statutory Liquidation Order
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={openRevokeModal}
+                                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95"
+                                  >
+                                    <FileCheck className="w-4 h-4" />
+                                    <span>View Settlement Voucher</span>
+                                  </button>
                                 </div>
                               </div>
                             </div>
 
-                            {/* Government Court Agreement Processing */}
-                            {!paymentSuccessId && (
-                              <div className="pb-6 mb-2 flex flex-col gap-5">
-                                <div className="flex flex-col gap-1">
-                                  <h4 className="text-base font-bold text-slate-800">Government Court Agreement Processing</h4>
-                                  <p className="text-sm text-slate-500 leading-relaxed">
-                                    To proceed, you must complete the government court procedures. Please select how you wish to process the agreement. The selected option will become active upon payment.
-                                  </p>
-                                  <div className="bg-blue-50 p-4 rounded-lg flex items-start gap-3 mt-2">
-                                    <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                                    <div className="flex flex-col gap-1">
-                                      <p className="text-sm text-blue-800 font-medium leading-relaxed">
-                                        It will be stated here that the court proceedings begin on the 24th; therefore, making the payment on the 23rd would be best, as the payment process takes one or two days.
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                  {/* Option 1: Self */}
-                                  <label className={`relative flex flex-col p-5 cursor-pointer rounded-lg border transition-all duration-200 ${paymentOption === 'self' ? 'border-[#007a3e] bg-emerald-50/30 ring-1 ring-[#007a3e]' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
-                                    <input 
-                                      type="radio" 
-                                      name="paymentOption" 
-                                      className="sr-only" 
-                                      checked={paymentOption === 'self'}
-                                      onChange={() => setPaymentOption('self')}
-                                    />
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                                      <span className={`font-bold text-base md:text-lg ${paymentOption === 'self' ? 'text-[#007a3e]' : 'text-slate-700'}`}>Self-processing</span>
-                                      <div className="flex items-center gap-2 self-start sm:self-auto">
-                                        <span className={`font-bold text-lg md:text-xl ${paymentOption === 'self' ? 'text-[#007a3e]' : 'text-slate-900'}`}>₹9,000</span>
-                                        {paymentOption === 'self' && (
-                                          <div className="bg-[#007a3e] text-white rounded-full p-0.5 shadow-sm">
-                                            <Check className="w-4 h-4" />
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">
-                                      You will handle the court process yourself, navigating the legal procedures and required paperwork directly.
-                                    </p>
-                                    <div className="mt-3 pt-3 border-t border-slate-200/50 flex flex-col gap-1">
-                                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Cost Breakdown</span>
-                                      <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                        Trademark (₹7,000), customs duty, stamp duty, magistrate processing (₹2,000), application fee (waived by the company).
-                                      </p>
-                                    </div>
-                                  </label>
-
-                                  {/* Option 2: Outsource */}
-                                  <label className={`relative flex flex-col p-5 cursor-pointer rounded-lg border transition-all duration-200 ${paymentOption === 'outsource' ? 'border-[#007a3e] bg-emerald-50/30 ring-1 ring-[#007a3e]' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
-                                    <input 
-                                      type="radio" 
-                                      name="paymentOption" 
-                                      className="sr-only" 
-                                      checked={paymentOption === 'outsource'}
-                                      onChange={() => setPaymentOption('outsource')}
-                                    />
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                                      <span className={`font-bold text-base md:text-lg ${paymentOption === 'outsource' ? 'text-[#007a3e]' : 'text-slate-700'}`}>Outsourcing</span>
-                                      <div className="flex items-center gap-2 self-start sm:self-auto">
-                                        <span className={`font-bold text-lg md:text-xl ${paymentOption === 'outsource' ? 'text-[#007a3e]' : 'text-slate-900'}`}>₹11,500</span>
-                                        {paymentOption === 'outsource' && (
-                                          <div className="bg-[#007a3e] text-white rounded-full p-0.5 shadow-sm">
-                                            <Check className="w-4 h-4" />
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">
-                                      Have the process handled directly and seamlessly by government personnel on your behalf, saving you time and effort.
-                                    </p>
-                                    <div className="mt-3 pt-3 border-t border-slate-200/50 flex flex-col gap-1">
-                                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Cost Breakdown</span>
-                                      <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                        Trademark (₹7,000), customs duty, stamp duty, magistrate processing (₹2,000), application fee (waived by the company), government processing fee (₹2,500).
-                                      </p>
-                                    </div>
-                                  </label>
-                                </div>
-
-                                <div className="mt-4 pt-5 border-t border-slate-200/50 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                                  <div className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                                      Total amount to pay: <span className="font-bold text-2xl text-slate-900">₹{paymentOption === 'self' ? '9,000' : '11,500'}</span>
-                                    </div>
-                                    <span className="text-[10px] font-medium text-slate-400 mt-1">
-                                      * It will take 1 to 2 days for the amount to be processed.
+                            {/* STATUTORY SIMPLE INTEREST COMPUTATION SCHEDULE (CLEAN LIGHT DESIGN) */}
+                            <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs flex flex-col gap-6 relative overflow-hidden">
+                              {/* Section Header */}
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-50 text-[#007a3e] border border-emerald-200/80 flex items-center gap-1.5">
+                                      <Sparkles className="w-3.5 h-3.5 text-[#007a3e]" />
+                                      Statutory Simple Interest Schedule
+                                    </span>
+                                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/70">
+                                      Interest rate: 17.02% per annum
+                                    </span>
+                                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/70">
+                                      Interest type: Simple interest
                                     </span>
                                   </div>
-                                  <div className="flex flex-col gap-3 w-full sm:w-auto">
-                                    <button 
-                                      type="button"
-                                      disabled
-                                      title="Action disabled: Contract has been cancelled"
-                                      className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-300 text-slate-500 px-8 py-3.5 rounded-xl font-bold transition-all opacity-50 cursor-not-allowed pointer-events-none"
-                                    >
-                                      <Lock className="w-5 h-5" />
-                                      Payment Disabled (Contract Cancelled)
-                                    </button>
-                                    <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                      <Lock className="w-3 h-3" />
-                                      Secured by <span className="text-blue-600 font-black">Razorpay</span>
+                                  <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
+                                    Interest & Liquidation Settlement Ledger
+                                  </h3>
+                                  <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
+                                    Official simple interest computation accrued on Milan Biswas's contributed capital under cancelled commercial contract proceedings.
+                                  </p>
+                                </div>
+
+                                <div className="flex flex-col items-start md:items-end gap-1 shrink-0 bg-emerald-50/70 px-4 py-2.5 rounded-2xl border border-emerald-200/80">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Total Net Disbursement</span>
+                                  <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-950 tracking-tight">₹2,86,666.30</span>
+                                  <span className="text-[10px] text-emerald-700 font-medium">Net Principal ₹2,34,500 + Interest ₹52,166.30 (Less ₹22,000 licenses)</span>
+                                </div>
+                              </div>
+
+                              {/* 3 Top Summary KPI Cards */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* KPI 1: Total Principal */}
+                                <div className="bg-slate-50/70 rounded-2xl p-5 border border-slate-200/80 flex flex-col justify-between gap-3 shadow-2xs hover:bg-slate-50 transition-colors">
+                                  <div className="flex items-center justify-between text-slate-400">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Net Principal</span>
+                                    <div className="p-2 rounded-xl bg-white text-slate-700 border border-slate-200/70 shadow-2xs">
+                                      <Receipt className="w-4 h-4" />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">₹2,34,500.00</div>
+                                    <div className="text-[11px] text-slate-500 font-medium mt-1">
+                                      Gross (₹2,56,500) minus 3 Licenses (-₹22,000)
+                                    </div>
+                                  </div>
+                                  <div className="pt-2 border-t border-slate-200/60 text-[10px] text-slate-500 font-medium">
+                                    RSS, GST & FSSAI licenses issued in your name
+                                  </div>
+                                </div>
+
+                                {/* KPI 2: Total Simple Interest */}
+                                <div className="bg-emerald-50/50 rounded-2xl p-5 border border-emerald-200 flex flex-col justify-between gap-3 shadow-2xs hover:bg-emerald-50/80 transition-colors">
+                                  <div className="flex items-center justify-between text-emerald-800">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Total Interest</span>
+                                    <div className="p-2 rounded-xl bg-white text-emerald-700 border border-emerald-200/80 shadow-2xs">
+                                      <TrendingUp className="w-4 h-4" />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-950 tracking-tight">₹52,166.30</div>
+                                    <div className="text-[11px] font-bold text-emerald-700 mt-1">
+                                      17.02% per annum • Simple interest
+                                    </div>
+                                  </div>
+                                  <div className="pt-2 border-t border-emerald-100 text-[10px] text-emerald-800/80 font-medium">
+                                    Combined accrued interest (₹35,146.30 + ₹17,020.00)
+                                  </div>
+                                </div>
+
+                                {/* KPI 3: Total Principal and Interest */}
+                                <div className="bg-white rounded-2xl p-5 border-2 border-emerald-500/30 ring-4 ring-emerald-50/60 flex flex-col justify-between gap-3 shadow-xs">
+                                  <div className="flex items-center justify-between text-emerald-900">
+                                    <span className="text-xs font-black uppercase tracking-wider text-emerald-900">Total Net Remittance</span>
+                                    <div className="p-2 rounded-xl bg-emerald-600 text-white shadow-xs">
+                                      <Landmark className="w-4 h-4" />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight">₹2,86,666.30</div>
+                                    <div className="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 w-max border border-emerald-200">
+                                      Direct Bank Remittance
+                                    </div>
+                                  </div>
+                                  <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-500 font-medium">
+                                    Net payout to Milan Biswas (after ₹22,000 license deduction)
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Itemized Loan Breakdown: First Loan & Second Loan */}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                {/* First Loan Card */}
+                                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs flex flex-col justify-between gap-4">
+                                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <div className="flex items-center gap-2.5">
+                                      <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/70 flex items-center justify-center font-bold text-xs">
+                                        #1
+                                      </div>
+                                      <div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 block">First loan</span>
+                                        <h4 className="text-base font-bold text-slate-900">Agreement Base & Operating Capital</h4>
+                                      </div>
+                                    </div>
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                      Tenure: 1 year
+                                    </span>
+                                  </div>
+
+                                  <div className="space-y-2.5 text-xs">
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Principal amount:</span>
+                                      <span className="font-mono font-bold text-slate-900 text-sm">₹2,06,500</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Interest rate:</span>
+                                      <span className="font-mono font-bold text-emerald-700">17.02% per annum</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Interest type:</span>
+                                      <span className="font-bold text-slate-800">Simple interest</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Tenure:</span>
+                                      <span className="font-mono font-bold text-slate-900">1 year</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-500 font-medium">Calculation Formula:</span>
+                                      <span className="font-mono text-[11px] text-slate-500">₹2,06,500 × 17.02% × 1 yr</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-emerald-800 font-bold">Interest:</span>
+                                      <span className="font-mono font-black text-emerald-700 text-base">₹35,146.30</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200/70 flex items-center justify-between">
+                                    <div>
+                                      <span className="text-[10px] uppercase font-bold text-blue-900 block">Total</span>
+                                      <span className="text-[11px] text-blue-700 font-medium">Principal + Interest</span>
+                                    </div>
+                                    <div className="text-xl sm:text-2xl font-black font-mono text-blue-950">
+                                      ₹2,41,646.30
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Second Loan Card */}
+                                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs flex flex-col justify-between gap-4">
+                                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <div className="flex items-center gap-2.5">
+                                      <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 border border-purple-200/70 flex items-center justify-center font-bold text-xs">
+                                        #2
+                                      </div>
+                                      <div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 block">Second loan</span>
+                                        <h4 className="text-base font-bold text-slate-900">1.5 Cr Special Request Fee</h4>
+                                      </div>
+                                    </div>
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                      Tenure: 2 years
+                                    </span>
+                                  </div>
+
+                                  <div className="space-y-2.5 text-xs">
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Principal amount:</span>
+                                      <span className="font-mono font-bold text-slate-900 text-sm">₹50,000</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Interest rate:</span>
+                                      <span className="font-mono font-bold text-emerald-700">17.02% per annum</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Interest type:</span>
+                                      <span className="font-bold text-slate-800">Simple interest</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-600 font-medium">Tenure:</span>
+                                      <span className="font-mono font-bold text-slate-900">2 years</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-slate-500 font-medium">Calculation Formula:</span>
+                                      <span className="font-mono text-[11px] text-slate-500">₹50,000 × 17.02% × 2 yrs</span>
+                                    </div>
+                                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                                      <span className="text-emerald-800 font-bold">Interest:</span>
+                                      <span className="font-mono font-black text-emerald-700 text-base">₹17,020.00</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200/70 flex items-center justify-between">
+                                    <div>
+                                      <span className="text-[10px] uppercase font-bold text-purple-900 block">Total</span>
+                                      <span className="text-[11px] text-purple-700 font-medium">Principal + Interest</span>
+                                    </div>
+                                    <div className="text-xl sm:text-2xl font-black font-mono text-purple-950">
+                                      ₹67,020.00
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            )}
+
+                              {/* Consolidated Reconciliation Bar */}
+                              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs font-mono">
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2.5 rounded-xl bg-white text-emerald-700 border border-slate-200/80 shadow-2xs shrink-0">
+                                    <Calculator className="w-5 h-5" />
+                                  </div>
+                                  <div>
+                                    <span className="text-[11px] uppercase font-bold text-slate-800 tracking-wider block font-sans">
+                                      Consolidated Total Reconciliation
+                                    </span>
+                                    <span className="text-slate-500 text-[11px] font-sans">
+                                      First loan (₹2,41,646.30) + Second loan (₹67,020.00) = ₹3,08,666.30 minus ₹22,000 (RSS, GST, FSSAI)
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-center lg:justify-end gap-x-3 gap-y-2 text-xs">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-slate-500 font-sans font-medium">Gross principal:</span>
+                                    <span className="font-bold text-slate-900 text-sm">₹2,56,500.00</span>
+                                  </div>
+                                  <span className="text-rose-600 font-bold font-sans">− ₹22,000 (Licenses) =</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-slate-500 font-sans font-medium">Net principal:</span>
+                                    <span className="font-bold text-slate-900 text-sm">₹2,34,500.00</span>
+                                  </div>
+                                  <span className="text-slate-400 font-bold">+</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-slate-500 font-sans font-medium">Total interest:</span>
+                                    <span className="font-bold text-emerald-700 text-sm">₹52,166.30</span>
+                                  </div>
+                                  <span className="text-slate-400 font-bold">=</span>
+                                  <div className="flex items-center gap-1.5 bg-emerald-100/70 px-3.5 py-1.5 rounded-xl border border-emerald-300/80">
+                                    <span className="text-emerald-900 font-sans font-bold">Net payout:</span>
+                                    <span className="font-black text-emerald-950 text-base">₹2,86,666.30</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* BANK ACCOUNT TRANSFER DISBURSEMENT NOTICE CARD (CLEAN LIGHT DESIGN) */}
+                            <div className="bg-white rounded-3xl border border-emerald-200 p-6 sm:p-8 shadow-xs flex flex-col gap-6 relative overflow-hidden">
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-emerald-100 pb-5">
+                                <div className="flex items-center gap-3.5">
+                                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center shrink-0 shadow-2xs">
+                                    <Landmark className="w-6 h-6" />
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="relative flex h-2.5 w-2.5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                      </span>
+                                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                                        Direct Bank Remittance Pipeline
+                                      </span>
+                                    </div>
+                                    <h3 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 mt-1">
+                                      Bank account transfer will be started very soon.
+                                    </h3>
+                                  </div>
+                                </div>
+
+                                <div className="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 self-start sm:self-auto">
+                                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                                  <span>Automated NEFT / RTGS Transfer</span>
+                                </div>
+                              </div>
+
+                              {/* 3-Stage Disbursement Pipeline Tracker */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 flex items-start gap-3">
+                                  <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200">
+                                    <Check className="w-4 h-4 stroke-[2.5]" />
+                                  </div>
+                                  <div>
+                                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Stage 1: Completed</span>
+                                    <span className="text-xs font-bold text-slate-900 block mt-0.5">Simple Interest Reconciled</span>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">17.02% statutory rate computed across ₹2,56,500 capital.</p>
+                                  </div>
+                                </div>
+
+                                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 flex items-start gap-3">
+                                  <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200">
+                                    <Check className="w-4 h-4 stroke-[2.5]" />
+                                  </div>
+                                  <div>
+                                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Stage 2: Approved</span>
+                                    <span className="text-xs font-bold text-slate-900 block mt-0.5">Liquidation Order Bound</span>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">Total payout of ₹2,86,666.30 cleared by administrative treasury (net of ₹22,000 licenses).</p>
+                                  </div>
+                                </div>
+
+                                <div className="p-4 rounded-xl bg-emerald-50/80 border-2 border-emerald-300 rounded-xl flex items-start gap-3 shadow-xs">
+                                  <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                                    <Clock className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">Stage 3: Starting Very Soon</span>
+                                    <span className="text-xs font-bold text-emerald-950 block mt-0.5">Bank Account Transfer</span>
+                                    <p className="text-[11px] text-emerald-800 mt-0.5 font-medium">Electronic payout queued for immediate release to applicant.</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Beneficiary Direct Notice Box */}
+                              <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200 text-xs text-slate-700 leading-relaxed font-medium flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="space-y-1">
+                                  <div className="text-slate-900 font-bold text-sm flex items-center gap-2">
+                                    <span>Beneficiary: Milan Biswas (Indus@Milan@2026)</span>
+                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-emerald-800 border border-emerald-200/80 font-bold">
+                                      Net Remittance: ₹2,86,666.30
+                                    </span>
+                                  </div>
+                                  <p className="text-slate-600 text-xs leading-relaxed">
+                                    Moreover - bank account transfer will be started very soon. Gross principal of <strong>₹2,56,500.00</strong> minus <strong>₹22,000.00</strong> for 3 personal licenses (RSS, GST, FSSAI in your name; no liquor or counter license) gives net principal of <strong>₹2,34,500.00</strong> plus total simple interest of <strong>₹52,166.30</strong> (Total net payout: <strong>₹2,86,666.30</strong>) will be credited directly to your registered bank account.
+                                  </p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={openRevokeModal}
+                                  className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-2 shrink-0 cursor-pointer active:scale-95"
+                                >
+                                  <FileCheck className="w-4 h-4" />
+                                  <span>View Settlement Voucher</span>
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         )}
 
@@ -3944,19 +4706,20 @@ export default function App() {
                         <div className="grid grid-cols-2 gap-3 text-slate-700">
                           <div>
                             <span className="text-[10px] uppercase text-slate-400 block font-bold">Principal Refund</span>
-                            <span className="font-black text-slate-900 text-sm font-mono">{formatINR(totals.principalAmount)}</span>
+                            <span className="font-black text-slate-900 text-sm font-mono">₹2,56,500.00</span>
+                            <span className="text-[10px] text-rose-600 font-semibold block mt-0.5">Less 3 Licenses: -₹22,000</span>
                           </div>
                           <div>
                             <span className="text-[10px] uppercase text-slate-400 block font-bold">Accrued Statutory Interest</span>
-                            <span className="font-bold text-amber-700 text-xs block mt-1">Final interest will be shown in a few days</span>
+                            <span className="font-bold text-emerald-700 text-xs block mt-1 font-mono">+₹52,166.30 (17.02% p.a.)</span>
                           </div>
                           <div className="col-span-2 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 flex items-center justify-between">
                             <div>
-                              <span className="text-[10px] uppercase text-emerald-900 font-extrabold block">Settlement Principal Amount</span>
-                              <span className="text-xs text-emerald-800 font-medium">Final interest will be shown in a few days</span>
+                              <span className="text-[10px] uppercase text-emerald-900 font-extrabold block">Total Net Settlement Amount</span>
+                              <span className="text-xs text-emerald-800 font-medium">Net of ₹22,000 licenses (RSS, GST, FSSAI in your name; no bar/counter)</span>
                             </div>
                             <span className="text-xl font-black text-emerald-950 font-mono">
-                              {formatINR(totals.principalAmount)}
+                              ₹2,86,666.30
                             </span>
                           </div>
                         </div>
@@ -3969,7 +4732,7 @@ export default function App() {
                           <div className="flex items-start gap-2">
                             <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                             <span>
-                              <strong>License Name Transfer Status:</strong> {isLicenseTransferRequested ? 'Application registered to transfer FSSAI & statutory licenses to personal name (Administrative processing time required).' : 'No license name transfer requested.'}
+                              <strong>License Name Transfer Scope:</strong> RSS, GST, and FSSAI licenses will come in Milan Biswas's name (Package Cost: ₹22,000 deducted). No liquor or counter license will come.
                             </span>
                           </div>
                         </div>
@@ -4013,7 +4776,7 @@ export default function App() {
                       <strong className="block text-amber-900 font-extrabold mb-0.5 text-xs">
                         Final Review Settlement Terms:
                       </strong>
-                      This is a final review of all bound commercial obligations. Total original settlement amount is <strong className="text-amber-950 font-bold">₹2,56,500</strong>. No interest will be shown at this stage; Final interest will be shown in a few days.
+                      This is a final review of all bound commercial obligations. Total net settlement amount is <strong className="text-amber-950 font-bold">₹2,86,666.30</strong> (Gross Principal: ₹2,56,500.00 minus ₹22,000 for RSS, GST, FSSAI licenses = ₹2,34,500.00 + Simple Interest: ₹52,166.30). The final interest and amount are shown, see from the payment page.
                     </div>
                   </div>
 
@@ -4064,45 +4827,69 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Final Review Liquidation Summary (No Interest Shown in Review) */}
+                  {/* Final Liquidation Summary with 17.02% Simple Interest (Clean Light Design) */}
                   {(() => {
                     const totals = calculateRevocationTotals();
                     return (
-                      <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-2xl p-4 text-white flex flex-col gap-3 shadow-md">
-                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200 uppercase tracking-wider">
-                            <Calculator className="w-3.5 h-3.5 text-amber-400" />
-                            <span>Final Review Liquidation Summary</span>
+                      <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-5 text-slate-800 flex flex-col gap-4 shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                            <Calculator className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>Statutory Liquidation & Simple Interest Summary</span>
                           </div>
-                          <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold border border-emerald-400/30">
-                            All {REVOCATION_TRANSACTIONS.length} Obligations Bound
+                          <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-200">
+                            Interest rate: 17.02% per annum • Simple interest
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                          <div className="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-center">
-                            <span className="text-[10px] uppercase font-bold text-slate-300 block">
-                              Original Settlement Amount
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <span className="text-[10px] uppercase font-bold text-slate-500 block">
+                              Net principal
                             </span>
-                            <span className="text-2xl font-black font-mono text-white mt-1 block">
-                              {formatINR(totals.principalAmount)}
+                            <span className="text-xl font-black font-mono text-slate-900 mt-1 block">
+                              ₹2,34,500.00
                             </span>
-                            <span className="text-[10px] text-slate-400 mt-0.5 block">
-                              Fixed principal across {REVOCATION_TRANSACTIONS.length} itemized transactions
+                            <span className="text-[10px] text-slate-500 mt-0.5 block">
+                              ₹2,56,500 minus ₹22,000 licenses
                             </span>
                           </div>
 
-                          <div className="bg-amber-500/10 p-3 rounded-xl border border-amber-400/20 flex flex-col justify-center">
-                            <div className="flex items-center gap-1.5 text-amber-300 text-[10px] font-extrabold uppercase">
-                              <Clock className="w-3.5 h-3.5" />
-                              <span>Statutory Accrued Interest</span>
-                            </div>
-                            <span className="text-xs font-bold text-amber-100 mt-1 block">
-                              Final interest will be shown in a few days
+                          <div className="bg-white p-3 rounded-xl border border-emerald-200 flex flex-col justify-between">
+                            <span className="text-[10px] uppercase font-bold text-emerald-800 block">
+                              Total interest
                             </span>
-                            <span className="text-[10px] text-amber-200/80 mt-0.5 block">
-                              Accrued statutory interest is in administrative processing.
+                            <span className="text-xl font-black font-mono text-emerald-700 mt-1 block">
+                              ₹52,166.30
                             </span>
+                            <span className="text-[10px] text-emerald-600 mt-0.5 block">
+                              ₹35,146.30 (1 yr) + ₹17,020.00 (2 yrs)
+                            </span>
+                          </div>
+
+                          <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-300 flex flex-col justify-between">
+                            <span className="text-[10px] uppercase font-bold text-emerald-900 block">
+                              Total Net Disbursement
+                            </span>
+                            <span className="text-xl font-black font-mono text-emerald-950 mt-1 block">
+                              ₹2,86,666.30
+                            </span>
+                            <span className="text-[10px] text-emerald-700 mt-0.5 block">
+                              Consolidated net disbursement
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-white p-3.5 rounded-xl border border-slate-200/80 font-mono">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-blue-700 font-bold">First loan (Tenure: 1 year):</span>
+                            <span className="text-slate-600">Principal amount: ₹2,06,500 • Interest: ₹35,146.30</span>
+                            <span className="text-slate-900 font-bold">Total: ₹2,41,646.30</span>
+                          </div>
+                          <div className="flex flex-col gap-0.5 border-t sm:border-t-0 sm:border-l border-slate-200 pt-1.5 sm:pt-0 sm:pl-3">
+                            <span className="text-purple-700 font-bold">Second loan (Tenure: 2 years):</span>
+                            <span className="text-slate-600">Principal amount: ₹50,000 • Interest: ₹17,020.00</span>
+                            <span className="text-slate-900 font-bold">Total: ₹67,020.00</span>
                           </div>
                         </div>
                       </div>
@@ -4112,9 +4899,9 @@ export default function App() {
                   {/* Statutory Mandatory Notes */}
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 flex flex-col gap-2">
                     <div className="flex items-start gap-2 leading-relaxed">
-                      <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <Landmark className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="text-slate-900 font-bold">Final Interest Directive:</strong> No interest is shown here. Final interest will be shown in a few days and disbursed along with the original settlement amount of ₹2,56,500.
+                        <strong className="text-slate-900 font-bold">Bank Remittance Notice:</strong> Moreover - bank account transfer will be started very soon. Gross principal of <strong>₹2,56,500.00</strong> minus <strong>₹22,000.00</strong> for RSS, GST, and FSSAI licenses (Net Principal: <strong>₹2,34,500.00</strong>) plus total interest of <strong>₹52,166.30</strong> (Total net payout: <strong>₹2,86,666.30</strong>) will be credited directly to the beneficiary's registered account.
                       </div>
                     </div>
                     <div className="flex items-start gap-2 leading-relaxed pt-1.5 border-t border-slate-200/60">
@@ -4159,13 +4946,6 @@ export default function App() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={closeRevokeModal}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
-                    >
-                      Cancel
-                    </button>
                     <button
                       type="button"
                       disabled={!isLienAcknowledged}
@@ -4601,6 +5381,198 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* LICENSE & REGULATORY CONTACT FORM MODAL */}
+      <AnimatePresence>
+        {showContactModal && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto" id="contact-form-overlay">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 max-w-xl w-full flex flex-col gap-5 shadow-2xl my-8 relative"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-display font-bold text-slate-900">
+                      Official Contact & Assistance Form
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Indus Legal Directorate & License Compliance Desk
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowContactModal(false)}
+                  className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {!contactFormSubmitted ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setContactFormSubmitted(true);
+                  }}
+                  className="flex flex-col gap-4 text-xs font-sans"
+                >
+                  {/* Notice Reminder */}
+                  <div className="p-3.5 bg-rose-50/70 border border-rose-200 rounded-xl text-rose-900 leading-relaxed">
+                    <strong>Notice:</strong> We are sorry that we cannot transfer the license, you can also review it, and for other help, please contact us on the contact form below.
+                  </div>
+
+                  {/* Applicant Details (read only / prefilled) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase text-slate-500">Applicant Name</label>
+                      <input
+                        type="text"
+                        readOnly
+                        value="Milan Biswas"
+                        className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-semibold cursor-not-allowed text-xs"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase text-slate-500">Account ID</label>
+                      <input
+                        type="text"
+                        readOnly
+                        value="Indus@Milan@2026"
+                        className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-mono font-semibold cursor-not-allowed text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase text-slate-500">Email Address</label>
+                      <input
+                        type="email"
+                        required
+                        value={contactEmail}
+                        onChange={(e) => setContactEmail(e.target.value)}
+                        className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-emerald-600 text-xs"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase text-slate-500">Phone Number</label>
+                      <input
+                        type="tel"
+                        required
+                        value={contactPhone}
+                        onChange={(e) => setContactPhone(e.target.value)}
+                        className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-emerald-600 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Inquiry Topic */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-bold uppercase text-slate-500">Help Category</label>
+                    <select
+                      value={contactCategory}
+                      onChange={(e) => setContactCategory(e.target.value)}
+                      className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-emerald-600 text-xs cursor-pointer"
+                    >
+                      <option value="License Transfer & Review">License Transfer & Re-review Request</option>
+                      <option value="Statutory Fee Breakdown">Government Fee & Kolkata Municipal Corp Tariff Clarification</option>
+                      <option value="Escrow Capital Refund">Cancelled Contract Refund Voucher Status (₹2,56,500)</option>
+                      <option value="Legal Directorate Hearing">Request Direct Legal Directorate Assistance</option>
+                    </select>
+                  </div>
+
+                  {/* Message Field */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-bold uppercase text-slate-500">Your Inquiry / Request Details</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={contactMessage}
+                      onChange={(e) => setContactMessage(e.target.value)}
+                      placeholder="Please describe what assistance or review you require regarding your license transfer or account proceedings..."
+                      className="p-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-600 text-xs leading-relaxed resize-none font-medium"
+                    />
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowContactModal(false)}
+                      className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Submit Inquiry</span>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="py-6 flex flex-col items-center text-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shadow-xs">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      Inquiry Docket #CONT-LIC-2026-WB882
+                    </span>
+                    <h4 className="text-base font-bold text-slate-900 pt-1">
+                      Inquiry Successfully Received
+                    </h4>
+                    <p className="text-xs text-slate-600 leading-relaxed max-w-md mx-auto">
+                      Thank you for contacting us. Your message regarding the license transfer review and regulatory status has been assigned to the Indus Legal Compliance Desk. A senior officer will respond directly to <strong className="text-slate-800">{contactEmail}</strong>.
+                    </p>
+                  </div>
+                  <div className="w-full bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1 text-left">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Applicant:</span>
+                      <span className="font-bold text-slate-800">Milan Biswas</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Category:</span>
+                      <span className="font-bold text-slate-800">{contactCategory}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Response SLA:</span>
+                      <span className="font-bold text-emerald-700">Within 24 Business Hours</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 w-full pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setContactFormSubmitted(false)}
+                      className="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Send Another Message
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowContactModal(false)}
+                      className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Drawer Navigation */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -4693,11 +5665,11 @@ export default function App() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { navigateTo('team'); setIsMobileMenuOpen(false); }}
-                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'team' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                  onClick={() => { navigateTo('license'); setIsMobileMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-semibold text-sm ${activeSidebarTab === 'license' ? 'bg-emerald-50 text-[#007a3e]' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                 >
-                  <Users className="w-5 h-5" />
-                  <span>Team</span>
+                  <FileBadge className="w-5 h-5" />
+                  <span>License</span>
                 </button>
                 <button
                   type="button"
@@ -4706,7 +5678,7 @@ export default function App() {
                 >
                   <CreditCard className="w-5 h-5" />
                   <span>Payments</span>
-                  {!paymentSuccessId && (
+                  {!isContractCancelled && !paymentSuccessId && (
                     <span className="ml-auto flex items-center justify-center px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[10px] font-bold tracking-wide shadow-sm animate-pulse">
                       DUE
                     </span>
