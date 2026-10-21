@@ -20,6 +20,7 @@ import { ScrollText, Download,
   Check, 
   RefreshCw,
   ShieldAlert,
+  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   LogIn,
@@ -54,6 +55,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getDeterministicItem, VerifiedItem, RouteNode } from './types';
 import IndusLogo from './components/IndusLogo';
 import IndiaGovEmblem from './components/IndiaGovEmblem';
+import OpeningScheduleView from './components/OpeningScheduleView';
+import { StandbyCompaniesModal } from './components/StandbyCompaniesModal';
 
 declare global {
   interface Window {
@@ -70,50 +73,55 @@ interface RouteState {
   paymentSub: PaymentSubTab;
   showRevokeModal: boolean;
   showCertificate: boolean;
+  showOpeningSchedule?: boolean;
 }
 
 function parseStateFromPath(pathname: string): RouteState {
   const path = pathname.toLowerCase().replace(/\/$/, '') || '/';
   
+  if (path === '/estimated-opening' || path === '/opening-schedule' || path === '/construction-status') {
+    return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: true };
+  }
   if (path === '/revoke-contract' || path === '/contract/revoke') {
-    return { tab: 'info', paymentSub: 'info', showRevokeModal: true, showCertificate: false };
+    return { tab: 'info', paymentSub: 'info', showRevokeModal: true, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/document/certificate' || path === '/certificate') {
-    return { tab: 'document', paymentSub: 'info', showRevokeModal: false, showCertificate: true };
+    return { tab: 'document', paymentSub: 'info', showRevokeModal: false, showCertificate: true, showOpeningSchedule: false };
   }
   if (path === '/document') {
-    return { tab: 'document', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'document', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/agreement') {
-    return { tab: 'agreement', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'agreement', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/license') {
-    return { tab: 'license', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'license', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/team') {
-    return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/payments/details') {
-    return { tab: 'payments', paymentSub: 'details', showRevokeModal: false, showCertificate: false };
+    return { tab: 'payments', paymentSub: 'details', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/payments/upgrade' || path === '/payments/upgrade-tier') {
-    return { tab: 'payments', paymentSub: 'upgrade', showRevokeModal: false, showCertificate: false };
+    return { tab: 'payments', paymentSub: 'upgrade', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/payments' || path === '/payments/info') {
-    return { tab: 'payments', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'payments', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/security-log' || path === '/cryptography') {
-    return { tab: 'cryptography', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'cryptography', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
   if (path === '/transit-track' || path === '/routing') {
-    return { tab: 'routing', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+    return { tab: 'routing', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
   }
-  return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false };
+  return { tab: 'info', paymentSub: 'info', showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
 }
 
-function getPathForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: { revokeModal?: boolean; certificateView?: boolean }): string {
+function getPathForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: { revokeModal?: boolean; certificateView?: boolean; openingSchedule?: boolean }): string {
   if (options?.revokeModal) return '/revoke-contract';
   if (options?.certificateView) return '/document/certificate';
+  if (options?.openingSchedule) return '/estimated-opening';
   
   switch (tab) {
     case 'info':
@@ -137,9 +145,10 @@ function getPathForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: 
   }
 }
 
-function getTitleForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: { revokeModal?: boolean; certificateView?: boolean }): string {
+function getTitleForState(tab: SidebarTab, paymentSub?: PaymentSubTab, options?: { revokeModal?: boolean; certificateView?: boolean; openingSchedule?: boolean }): string {
   if (options?.revokeModal) return 'Indus Limited | Revoke Contract - Access Portal';
   if (options?.certificateView) return 'Indus Limited | Certificate Warrant - Access Portal';
+  if (options?.openingSchedule) return 'Indus Limited | Construction Status & Opening Roadmap - Access Portal';
   
   switch (tab) {
     case 'info':
@@ -179,10 +188,11 @@ export default function App() {
   // Initialize active tabs from current browser URL pathname
   const initialRoute = typeof window !== 'undefined' 
     ? parseStateFromPath(window.location.pathname) 
-    : { tab: 'info' as SidebarTab, paymentSub: 'info' as PaymentSubTab, showRevokeModal: false, showCertificate: false };
+    : { tab: 'info' as SidebarTab, paymentSub: 'info' as PaymentSubTab, showRevokeModal: false, showCertificate: false, showOpeningSchedule: false };
 
   const [activeSidebarTab, setActiveSidebarTab] = useState<SidebarTab>(initialRoute.tab);
   const [paymentSubTab, setPaymentSubTab] = useState<PaymentSubTab>(initialRoute.paymentSub);
+  const [showOpeningSchedule, setShowOpeningSchedule] = useState<boolean>(initialRoute.showOpeningSchedule || false);
   const [tierUpgradeSubmitted, setTierUpgradeSubmitted] = useState(true);
   const [selectedUpgradeTier, setSelectedUpgradeTier] = useState<'tier1' | 'tier2'>('tier2');
   const [upgradeSubmittedTier, setUpgradeSubmittedTier] = useState<'tier1' | 'tier2'>('tier2');
@@ -259,6 +269,7 @@ export default function App() {
   const [showCertificateView, setShowCertificateView] = useState(initialRoute.showCertificate);
   const [showPaymentBlockModal, setShowPaymentBlockModal] = useState(false);
   const [showRevokeContractModal, setShowRevokeContractModal] = useState(initialRoute.showRevokeModal);
+  const [showStandbyCompaniesModal, setShowStandbyCompaniesModal] = useState(false);
   const [isContractCancelled, setIsContractCancelled] = useState(false);
   const [isLienAcknowledged, setIsLienAcknowledged] = useState(true);
   const [isLicenseTransferRequested, setIsLicenseTransferRequested] = useState(true);
@@ -369,7 +380,7 @@ export default function App() {
   const navigateTo = (
     tab: SidebarTab,
     paymentSub?: PaymentSubTab,
-    options?: { revokeModal?: boolean; certificateView?: boolean; replace?: boolean }
+    options?: { revokeModal?: boolean; certificateView?: boolean; openingSchedule?: boolean; replace?: boolean }
   ) => {
     setActiveSidebarTab(tab);
     const effectivePaymentSub = paymentSub || (tab === 'payments' ? paymentSubTab : 'info');
@@ -381,6 +392,11 @@ export default function App() {
     }
     if (options?.certificateView !== undefined) {
       setShowCertificateView(options.certificateView);
+    }
+    if (options?.openingSchedule !== undefined) {
+      setShowOpeningSchedule(options.openingSchedule);
+    } else {
+      setShowOpeningSchedule(false);
     }
 
     const targetPath = getPathForState(tab, effectivePaymentSub, options);
@@ -394,6 +410,36 @@ export default function App() {
         window.history.replaceState({ tab, paymentSub: effectivePaymentSub, options }, '', targetPath);
       } else {
         window.history.pushState({ tab, paymentSub: effectivePaymentSub, options }, '', targetPath);
+      }
+    }
+  };
+
+  const openOpeningSchedule = () => {
+    setShowOpeningSchedule(true);
+    setShowRevokeContractModal(false);
+    setShowCertificateView(false);
+    const targetPath = '/estimated-opening';
+    if (typeof document !== 'undefined') {
+      document.title = getTitleForState(activeSidebarTab, paymentSubTab, { openingSchedule: true });
+    }
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath);
+      }
+    }
+  };
+
+  const closeOpeningSchedule = () => {
+    setShowOpeningSchedule(false);
+    const targetPath = getPathForState(activeSidebarTab, activeSidebarTab === 'payments' ? paymentSubTab : undefined);
+    if (typeof document !== 'undefined') {
+      document.title = getTitleForState(activeSidebarTab, paymentSubTab);
+    }
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath);
       }
     }
   };
@@ -412,6 +458,7 @@ export default function App() {
       'allowance_amount',
       'special_request_processing',
     ]);
+    setShowOpeningSchedule(false);
     setShowRevokeContractModal(true);
     const targetPath = '/revoke-contract';
     if (typeof document !== 'undefined') {
@@ -435,6 +482,7 @@ export default function App() {
 
   const openCertificateView = () => {
     if (isContractCancelled) return;
+    setShowOpeningSchedule(false);
     setShowCertificateView(true);
     const targetPath = '/document/certificate';
     if (typeof document !== 'undefined') {
@@ -487,9 +535,11 @@ export default function App() {
       setPaymentSubTab(state.paymentSub);
       setShowRevokeContractModal(state.showRevokeModal);
       setShowCertificateView(state.showCertificate);
+      setShowOpeningSchedule(state.showOpeningSchedule || false);
       document.title = getTitleForState(state.tab, state.paymentSub, {
         revokeModal: state.showRevokeModal,
-        certificateView: state.showCertificate
+        certificateView: state.showCertificate,
+        openingSchedule: state.showOpeningSchedule
       });
     };
 
@@ -499,7 +549,8 @@ export default function App() {
     } else {
       document.title = getTitleForState(initialRoute.tab, initialRoute.paymentSub, {
         revokeModal: initialRoute.showRevokeModal,
-        certificateView: initialRoute.showCertificate
+        certificateView: initialRoute.showCertificate,
+        openingSchedule: initialRoute.showOpeningSchedule
       });
     }
 
@@ -1035,11 +1086,11 @@ export default function App() {
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col gap-6 py-6 md:py-8 md:pl-8">
+            <div className="flex-1 min-w-0 flex flex-col gap-6 py-6 md:py-8 md:pl-8">
               {selectedItem && (
                 <>
                   {/* Outstanding Payment Alert Tracker */}
-                  {!isContractCancelled && !paymentSuccessId && (
+                  {!isContractCancelled && !showOpeningSchedule && !paymentSuccessId && (
                     <div className="bg-red-50/90 backdrop-blur border border-red-200/60 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                       <div className="flex flex-col gap-1 text-sm text-red-800">
@@ -1052,7 +1103,7 @@ export default function App() {
                   )}
 
                   {/* Tier 2 Upgrade Approved Payment Alert Tracker */}
-                  {!isContractCancelled && tierUpgradeReviewStatus === 'approved' && tierInstallmentStage === 'advance_due' && (
+                  {!isContractCancelled && !showOpeningSchedule && tierUpgradeReviewStatus === 'approved' && tierInstallmentStage === 'advance_due' && (
                     <div className="bg-gradient-to-r from-purple-50/95 via-indigo-50/95 to-emerald-50/90 backdrop-blur border-2 border-purple-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="flex items-start gap-3.5">
                         <div className="p-2.5 rounded-xl bg-purple-600 text-white shrink-0 shadow-sm mt-0.5">
@@ -1093,7 +1144,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {!isContractCancelled && tierInstallmentStage === 'advance_paid' && (
+                  {!isContractCancelled && !showOpeningSchedule && tierInstallmentStage === 'advance_paid' && (
                     <div className="bg-gradient-to-r from-emerald-50/95 via-blue-50/95 to-purple-50/90 backdrop-blur border-2 border-emerald-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="flex items-start gap-3.5">
                         <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0 shadow-sm mt-0.5">
@@ -1134,42 +1185,61 @@ export default function App() {
 
                   {/* Tabbed Content Panel */}
                   <div className="flex flex-col gap-6">
-                    {activeSidebarTab === 'info' && (
-                      <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* Premium Header Profile Overview */}
-                        <div className="border-b border-slate-200 pb-8 mb-4 flex flex-col gap-6">
-                          
-                          <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
-                            <div className="flex flex-col gap-2">
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100 w-fit shadow-sm">
-                                <Check className="w-3.5 h-3.5" /> REGISTERED PROFILE
-                              </span>
-                              <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight mt-2">
-                                {selectedItem.name}
-                              </h2>
-                              <span className="text-slate-500 font-mono text-sm">
-                                ID: <span className="font-bold text-slate-700">{selectedItem.id}</span>
-                              </span>
-                            </div>
-                            <div className="flex flex-col items-start md:items-end gap-1 text-sm font-semibold">
-                              <span className="text-slate-400 text-xs font-medium">Status</span>
-                              <span className="text-emerald-600 font-bold">{selectedItem.status}</span>
-                            </div>
-                          </div>
-
-                          <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-4 mt-4 pt-6 border-t border-slate-200/50">
-                            {Object.entries(selectedItem.specifications).slice(0, 4).map(([key, value], idx) => (
-                              <div key={idx} className="flex flex-col gap-1">
-                                <span className="text-xs font-medium text-slate-500">{key}</span>
-                                <span className="text-sm font-bold text-slate-800 truncate">{value}</span>
+                    {showOpeningSchedule && selectedItem ? (
+                      <OpeningScheduleView
+                        selectedItem={selectedItem}
+                        onBack={closeOpeningSchedule}
+                        onContactAdmin={() => setShowPaymentBlockModal(true)}
+                      />
+                    ) : (
+                      <>
+                        {activeSidebarTab === 'info' && (
+                          <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Premium Header Profile Overview */}
+                            <div className="border-b border-slate-200 pb-8 mb-4 flex flex-col gap-6">
+                              
+                              <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                <div className="flex flex-col gap-2">
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 text-[11px] font-bold tracking-wide border border-emerald-100 w-fit shadow-sm">
+                                    <Check className="w-3.5 h-3.5" /> REGISTERED PROFILE
+                                  </span>
+                                  <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight mt-2">
+                                    {selectedItem.name}
+                                  </h2>
+                                  <span className="text-slate-500 font-mono text-sm">
+                                    ID: <span className="font-bold text-slate-700">{selectedItem.id}</span>
+                                  </span>
+                                </div>
+                                <div className="flex flex-col items-start md:items-end gap-1 text-sm font-semibold">
+                                  <span className="text-slate-400 text-xs font-medium">Status</span>
+                                  <span className="text-emerald-600 font-bold">{selectedItem.status}</span>
+                                </div>
                               </div>
-                            ))}
-                            <div className="flex flex-col gap-1">
-                              <span className="text-xs font-medium text-slate-500">Estimated Opening Date</span>
-                              <span className="text-sm font-bold text-slate-800 truncate">Not yet disclosed.</span>
+
+                              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 gap-4 mt-4 pt-6 border-t border-slate-200/50">
+                                {Object.entries(selectedItem.specifications).slice(0, 4).map(([key, value], idx) => (
+                                  <div key={idx} className="flex flex-col gap-1">
+                                    <span className="text-xs font-medium text-slate-500">{key}</span>
+                                    <span className="text-sm font-bold text-slate-800 truncate">{value}</span>
+                                  </div>
+                                ))}
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-xs font-medium text-slate-500">Estimated Opening Date</span>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-sm font-bold text-slate-800">Not yet disclosed.</span>
+                                    <button
+                                      type="button"
+                                      onClick={openOpeningSchedule}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#007a3e] hover:text-emerald-800 border border-emerald-200/90 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95 whitespace-nowrap"
+                                      title="Click to view explanation"
+                                    >
+                                      <span>Explanation</span>
+                                      <ArrowRight className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
                         {/* Agreement Revocation Notice Banner */}
                         {isContractCancelled && (
@@ -1258,16 +1328,8 @@ export default function App() {
 
                     {activeSidebarTab === 'agreement' && (
                       <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex items-center justify-between border-b border-slate-200/50 pb-4">
+                        <div className="border-b border-slate-200/50 pb-4">
                           <h3 className="text-lg font-display font-bold text-slate-900">Agreement & Roles</h3>
-                          <button
-                            type="button"
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-[11px] font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 cursor-pointer"
-                            onClick={() => window.print()}
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            Download PDF
-                          </button>
                         </div>
 
                         {/* Revocation notice banner */}
@@ -1284,142 +1346,255 @@ export default function App() {
                         )}
                         
                         <div className="flex flex-col gap-6">
-                          {/* Overview Card */}
-                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
-                            <div className="flex items-start gap-5">
-                              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
-                                <Users className="w-7 h-7" />
-                              </div>
-                              <div className="flex flex-col gap-2">
-                                <div className="flex items-center gap-3">
-                                  <h4 className="text-xl font-display font-bold text-slate-900">Parties & Purpose</h4>
-                                  <span className="px-2.5 py-1 bg-emerald-100 text-[#007a3e] text-[10px] font-bold uppercase tracking-wider rounded-full">ACTIVE AGREEMENT</span>
+                          {/* CRITICAL WARNING BANNER: FINAL NOTICE */}
+                          <div className="rounded-3xl border-2 border-rose-500/50 bg-gradient-to-br from-rose-500/[0.1] via-amber-500/[0.06] to-slate-900/[0.04] p-6 md:p-8 shadow-lg relative overflow-hidden">
+                            <div className="flex flex-col gap-5 relative z-10">
+                              <div className="flex items-start sm:items-center gap-3.5">
+                                <div className="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                                  <ShieldAlert className="w-6 h-6" />
                                 </div>
-                                <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
-                                  This Agreement is made between the <strong className="text-slate-800">Lessor</strong> (lawful owner of the premises) and the <strong className="text-slate-800">Lessee</strong>. The premises shall be provided for the purpose of establishing, developing and operating a Luxury Bar, Restaurant, Lounge, Hospitality and other allied commercial activities.
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-rose-600 text-white shadow-2xs">
+                                      CRITICAL FINAL DIRECTIVE
+                                    </span>
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-900 border border-rose-300">
+                                      ZERO FURTHER TOLERANCE FOR REVERSALS
+                                    </span>
+                                  </div>
+                                  <h4 className="text-xl sm:text-2xl font-display font-black text-rose-950 tracking-tight mt-0.5">
+                                    Think about what you will do now — if you do anything this time, the company will not cooperate again
+                                  </h4>
+                                </div>
+                              </div>
+
+                              <div className="p-4 sm:p-5 rounded-2xl bg-white/90 backdrop-blur-xs border border-rose-200 text-xs sm:text-sm text-slate-800 leading-relaxed flex flex-col gap-2.5 shadow-xs">
+                                <p className="font-semibold text-rose-950">
+                                  Official Notice to Agreement Partner (Milan Biswas):
+                                </p>
+                                <p>
+                                  You have repeatedly altered, reconsidered, and reversed your decisions regarding this agreement and venue tenure. Please be officially advised: <strong>You will NOT be given the opportunity again and again. Think very carefully about what you will do now. If you do anything this time—any premature cancellation, legal revocation, payment dispute, or operational hesitation—the company will not cooperate again under any circumstances.</strong>
+                                </p>
+                                <p className="text-slate-700">
+                                  Upon any further cancellation or revocation, 100% of the bar & club premises, operational infrastructure, furniture, bar counters, and commercial rights will be <strong>immediately and permanently handed over to 10 pre-approved standby companies and startups</strong>. All these institutional entities have already formally applied for this venue, cleared financial escrow verification, and stand ready to make the appropriate payment immediately.
+                                </p>
+                              </div>
+
+                              {/* PREMIUM STANDBY COMPANIES ACTION BANNER */}
+                              <div className="rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-slate-800 p-4 sm:p-5 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                                <div className="flex items-center gap-3.5 relative z-10">
+                                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0 shadow-inner">
+                                    <Building2 className="w-5 h-5 text-emerald-400" />
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="text-sm font-bold text-white tracking-wide">
+                                        10 Pre-Approved Standby Corporate Takeover Entities
+                                      </span>
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                        Escrow & Solvency Cleared
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-snug">
+                                      Institutional F&B conglomerates, national chains & luxury nightlife groups prepared for instant handover. Click to inspect all entities.
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setShowStandbyCompaniesModal(true)}
+                                  className="relative z-10 group flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-[#007a3e] hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs sm:text-sm shadow-lg hover:shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer shrink-0 border border-emerald-400/30"
+                                >
+                                  <Building2 className="w-4 h-4 text-emerald-200 group-hover:scale-110 transition-transform" />
+                                  <span>View Companies</span>
+                                  <span className="px-1.5 py-0.5 text-[10px] font-black rounded-md bg-white/20 text-white">10</span>
+                                  <ChevronRight className="w-4 h-4 text-emerald-200 group-hover:translate-x-0.5 transition-transform" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 1. OFFICIAL NOC & VENUE CLEARANCE CARD */}
+                          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 md:p-8 shadow-sm flex flex-col gap-6 relative overflow-hidden">
+                            <div className="flex items-start justify-between gap-4 flex-wrap pb-4 border-b border-slate-100">
+                              <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-[#007a3e] flex items-center justify-center shrink-0 border border-emerald-100">
+                                  <FileCheck className="w-7 h-7" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-[#007a3e] border border-emerald-200">
+                                      STATUTORY NOC GRANTED
+                                    </span>
+                                    <span className="text-xs font-mono font-bold text-slate-500">
+                                      REF: INDUS-NOC-WB27-7983
+                                    </span>
+                                  </div>
+                                  <h4 className="text-xl sm:text-2xl font-display font-bold text-slate-900">
+                                    Official NOC • Designated Luxury Bar & Club Venue Details
+                                  </h4>
+                                </div>
+                              </div>
+
+                              <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono font-bold text-slate-700">
+                                Venue Clearance: Authorized
+                              </div>
+                            </div>
+
+                            {/* NOC Scope & Venue Specifications */}
+                            <div className="flex flex-col gap-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                              <p>
+                                This <strong>No Objection Certificate (NOC)</strong> is officially granted strictly for the commercial establishment, lawful possession, and operational management of the designated <strong>Luxury Bar & Club</strong>. Under this clearance, the authorized agreement partner is legally permitted to execute interior development, acoustic installation, bar counter establishment, culinary kitchen operations, excise liquor service, and entertainment hospitality.
+                              </p>
+
+                              {/* Key Venue Meta Badges */}
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Designated Venue</span>
+                                  <span className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                    <Wine className="w-3.5 h-3.5 text-[#007a3e]" /> Luxury Bar & Club
+                                  </span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Authorized Partner</span>
+                                  <span className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                    <BadgeCheck className="w-3.5 h-3.5 text-[#007a3e]" /> Milan Biswas
+                                  </span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Corporate Entity</span>
+                                  <span className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                    <Building2 className="w-3.5 h-3.5 text-[#007a3e]" /> Indus Limited
+                                  </span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">License Protocol</span>
+                                  <span className="text-xs sm:text-sm font-mono font-bold text-amber-700">
+                                    WB27/0428/7983/2026
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Strict Confidentiality Firewall Notice */}
+                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex items-start gap-3.5 text-xs text-amber-950">
+                                <Lock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                                <div className="flex flex-col gap-1">
+                                  <strong className="text-amber-950 font-bold text-sm">
+                                    Strict Corporate Firewall & Internal System Confidentiality Notice
+                                  </strong>
+                                  <p className="leading-relaxed font-medium">
+                                    This NOC pertains <strong>exclusively to the physical bar and club venue, operations, and customer service</strong>. Under statutory corporate protocols, <strong>the user/operator has NO access, insight, or rights regarding Indus Limited's company internal systems</strong>, enterprise databases, backend accounting architectures, corporate governance networks, or internal proprietary mechanisms. All company internal infrastructure remains strictly confidential and off-limits.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 2. PAYMENT LEDGER & AUDIT DETAILS CARD */}
+                          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 md:p-8 shadow-sm flex flex-col gap-6">
+                            <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
+                              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                                <CreditCard className="w-7 h-7" />
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                    VERIFIED PAYMENT AUDIT
+                                  </span>
+                                  <span className="text-xs font-mono font-bold text-slate-500">
+                                    FINANCIAL LEDGER
+                                  </span>
+                                </div>
+                                <h4 className="text-xl sm:text-2xl font-display font-bold text-slate-900">
+                                  Payment Records & Individual Accounting Breakdown
+                                </h4>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {/* Payment 1: First Agreement Payment */}
+                              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col gap-2.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                    First Agreement Acceptance
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-[#007a3e] border border-emerald-200">
+                                    Accepted
+                                  </span>
+                                </div>
+                                <div className="text-2xl font-black font-mono text-slate-900">
+                                  ₹1,40,000.00
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+                                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                  <span>Accepted Date: <strong className="text-slate-900">23-10-2025</strong></span>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-slate-200/60">
+                                  The first agreement consideration of ₹1,40,000 was officially accepted and acknowledged into the commercial agreement ledger on 23-10-2025.
+                                </p>
+                              </div>
+
+                              {/* Payment 2: PPF Account (Basanti Biswas) */}
+                              <div className="p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 flex flex-col gap-2.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-indigo-800">
+                                    PPF Channel Source
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                    Verified Channel
+                                  </span>
+                                </div>
+                                <div className="text-base font-black text-indigo-950 flex items-center gap-1.5 flex-wrap">
+                                  <Landmark className="w-4 h-4 text-indigo-600 shrink-0" />
+                                  <span>PPF — Basanti Biswas</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300/80 flex items-center gap-1 shadow-2xs">
+                                    <span>Note:</span> <strong>Interest Payment</strong>
+                                  </span>
+                                </div>
+                                <div className="text-xs text-indigo-900 font-medium">
+                                  Designated Bank & Provident Fund Remittance
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-indigo-200/60">
+                                  Certain payments originated and were remitted through the registered Public Provident Fund (PPF) account of <strong>Basanti Biswas</strong> (Note: <strong>Interest Payment</strong>), officially logged and recognized in partner capital accounting.
+                                </p>
+                              </div>
+
+                              {/* Payment 3: Remaining / Pending Realization */}
+                              <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 flex flex-col gap-2.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800">
+                                    Remaining Realization
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-[#007a3e] border border-emerald-200">
+                                    Credited
+                                  </span>
+                                </div>
+                                <div className="text-2xl font-black font-mono text-emerald-950">
+                                  Full Clearance
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-emerald-900 font-medium">
+                                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Realized Date: <strong className="text-emerald-950">26-10-2025</strong></span>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-emerald-200/60">
+                                  The pending remaining payments and balance clearances arrived and were successfully confirmed on <strong>26-10-2025</strong>, completing the active capital status.
                                 </p>
                               </div>
                             </div>
-                          </div>
 
-                          {/* Grid for Details */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
-                              <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
-                                  <Calendar className="w-5 h-5" />
-                                </div>
-                                <h4 className="font-bold text-slate-900">Term & Possession</h4>
+                            {/* Individual Payments Accounting Directive */}
+                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5 text-xs text-slate-700">
+                              <Receipt className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+                              <div className="flex flex-col gap-1">
+                                <strong className="text-slate-900 font-bold">Individual Transaction Accounting Protocol:</strong>
+                                <p className="leading-relaxed">
+                                  The payments you made earlier are accounted for, tracked, and settled <strong>individually</strong>. Each transaction remains distinct with its own receipt reference, ensuring complete transparent reconciliation without pooling or arbitrary deductions.
+                                </p>
                               </div>
-                              <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-grow">
-                                Valid for a fixed period of <strong className="text-slate-800">five (5) years</strong>. The Lessee has the exclusive right to possess, develop, and operate the business.
-                              </p>
-                              <ul className="text-[13px] text-slate-500 space-y-2.5 bg-slate-50 p-4 rounded-xl">
-                                <li className="flex items-start gap-2.5">
-                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
-                                  <span className="leading-snug">Lessor shall not interfere with day-to-day operations.</span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
-                                  <span className="leading-snug">No competing business permitted in the same premises.</span>
-                                </li>
-                              </ul>
-                            </div>
-
-                            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col h-full hover:shadow-md transition-shadow">
-                              <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
-                                  <CreditCard className="w-5 h-5" />
-                                </div>
-                                <h4 className="font-bold text-slate-900">Financial Terms</h4>
-                              </div>
-                              <p className="text-sm text-slate-600 leading-relaxed mb-5 flex-grow">
-                                Monthly rent is payable via bank transfer or mutually agreed traceable methods, subject to agreed escalation percentages over time.
-                              </p>
-                              <ul className="text-[13px] text-slate-500 space-y-2.5 bg-slate-50 p-4 rounded-xl">
-                                <li className="flex items-start gap-2.5">
-                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
-                                  <span className="leading-snug">Refundable security deposit is required.</span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /> 
-                                  <span className="leading-snug">No arbitrary deductions permitted upon expiry.</span>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-
-                          {/* Full Width Cards */}
-                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-                              <Layers className="w-32 h-32" />
-                            </div>
-                            <div className="flex items-center gap-3 mb-4 relative">
-                              <div className="p-2 bg-orange-50 text-orange-600 rounded-lg">
-                                <Layers className="w-5 h-5" />
-                              </div>
-                              <h4 className="font-bold text-slate-900">Infrastructure & Investment</h4>
-                            </div>
-                            <p className="text-sm text-slate-600 leading-relaxed max-w-3xl relative">
-                              The Lessee will make substantial investments in development, interior decoration, equipment (kitchen, bar, CCTV, AC), and branding. All movable assets purchased by the Lessee remain their <strong className="text-slate-800">exclusive property</strong>. The Lessor has no right to seize, retain, or interfere with these assets. Major structural repairs remain the responsibility of the Lessor.
-                            </p>
-                          </div>
-
-                          <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
-                            <div className="flex items-center gap-3 mb-6">
-                              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                                <FileCheck className="w-5 h-5" />
-                              </div>
-                              <h4 className="font-bold text-slate-900">Licenses & Operations</h4>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl">
-                                <h5 className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-widest flex items-center gap-2">
-                                  <UserCheck className="w-3.5 h-3.5" /> Lessee Responsibilities
-                                </h5>
-                                <ul className="text-sm text-slate-700 space-y-2.5">
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Obtain Excise, Trade, Fire, FSSAI, GST licenses.</li>
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Pay electricity, water, internet, and utility charges.</li>
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Appoint and manage all employees independently.</li>
-                                </ul>
-                              </div>
-                              <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl">
-                                <h5 className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-widest flex items-center gap-2">
-                                  <ShieldCheck className="w-3.5 h-3.5" /> Lessor Responsibilities
-                                </h5>
-                                <ul className="text-sm text-slate-700 space-y-2.5">
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Provide ownership/lease documents & NOC.</li>
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Maintain structural integrity of property.</li>
-                                  <li className="flex items-start gap-2"><span className="text-slate-300">•</span> Pay property-related taxes and ownership dues.</li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-rose-50/50 rounded-2xl border border-rose-100 p-6 md:p-8 shadow-sm">
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="p-2 bg-rose-100 text-rose-600 rounded-lg">
-                                <ShieldAlert className="w-5 h-5" />
-                              </div>
-                              <h4 className="font-bold text-rose-900">Termination & Protection</h4>
-                            </div>
-                            <p className="text-sm text-rose-800/80 leading-relaxed max-w-3xl">
-                              The agreement <strong className="text-rose-900">cannot be terminated prematurely</strong> for convenience or change of mind. If terminated due to material breach or unlawful interference by the Lessor, the Lessee is entitled to settlement of unrecouped investments and legally recoverable losses. No forced eviction, lock changes, or utility disconnections are permitted without lawful procedure.
-                            </p>
-                          </div>
-                          
-                          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0">
-                                  <AlertTriangle className="w-5 h-5" />
-                                </div>
-                                <div>
-                                  <h4 className="font-bold text-slate-900">Dispute Resolution</h4>
-                                  <p className="text-xs text-slate-500 mt-0.5">Mutual discussion, followed by mediation or arbitration in appropriate jurisdiction.</p>
-                                </div>
-                            </div>
-                            <div className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 shadow-sm text-center">
-                              Legally Binding
                             </div>
                           </div>
                         </div>
@@ -3289,6 +3464,10 @@ export default function App() {
                                       <span>
                                         Schedule: <strong className="font-mono text-purple-900 font-bold">₹17,000 Advance</strong> + <strong className="font-mono text-slate-800 font-bold">₹1,00,000 Rem.</strong>
                                       </span>
+                                      <span>•</span>
+                                      <span className="text-rose-700 font-bold">
+                                        Last Payment Date: 24-10-2026 (Remaining 1 Lakh date updated after 1st payment)
+                                      </span>
                                     </div>
                                   </div>
                                 </div>
@@ -4599,6 +4778,8 @@ export default function App() {
                         </div>
                       </div>
                     )}
+                      </>
+                    )}
                   </div>
                 </>
               )}
@@ -5168,6 +5349,27 @@ export default function App() {
                         <strong className="text-slate-900 font-bold">License Name Change Directive:</strong> If the application is made to change the statutory licenses to your own individual name (Milan Biswas), that matter may take some more time due to judicial & regulatory clearance.
                       </div>
                     </div>
+                  </div>
+
+                  {/* Standby Corporate Handover Warning */}
+                  <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-400/40 text-xs text-amber-950 flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                        <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+                        <span>Irrevocable Standby Corporate Handover Warning</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowStandbyCompaniesModal(true)}
+                        className="text-[11px] font-bold text-slate-900 bg-white hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-300 shadow-2xs cursor-pointer flex items-center gap-1"
+                      >
+                        <Building2 className="w-3 h-3 text-emerald-700" />
+                        <span>View 10 Companies →</span>
+                      </button>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed font-medium">
+                      Notice: Revoking this contract triggers immediate and permanent surrender of all rights to 10 pre-approved commercial entities (<strong>Wow! Momo, Bisk Farm, Biscok, The Myx, Tall Tales, Club Fenicia, Double Down Brewpub, Synthe, iMerit, Rebel Foods</strong>). All entities are escrow-ready to make the appropriate payment immediately. You will not be given the opportunity again.
+                    </p>
                   </div>
 
                   {/* Options Toggles: License Name Transfer & Lien Acknowledgment */}
@@ -6015,6 +6217,65 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Warning: Last Chance Directive */}
+                  <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/70 to-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-3 shadow-xs">
+                    <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div className="flex flex-col gap-1 text-xs text-rose-950">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                          FINAL WARNING DIRECTIVE
+                        </span>
+                        <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                          This is the last chance, move forward with the right decision.
+                        </strong>
+                      </div>
+                      <p className="text-rose-800 leading-relaxed font-medium text-[11px]">
+                        The company has established the final schedule for this transaction. Adhere strictly to the dates below—no further grace periods, alterations, or repeated opportunities will be granted.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Payment Dates Schedule: Last Date & Remaining Date */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Last Payment Date */}
+                    <div className="p-3.5 bg-white rounded-xl border-2 border-rose-200 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">
+                          Last Payment Date (Advance)
+                        </span>
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                          Final Deadline
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-900 font-bold text-base mt-0.5">
+                        <Calendar className="w-4 h-4 text-rose-600 shrink-0" />
+                        <span className="font-mono text-rose-950 font-black">24-10-2026</span>
+                      </div>
+                      <span className="text-[10.5px] text-slate-500 font-medium">
+                        Last date to remit ₹17,000 advance to lock Tier 2 activation.
+                      </span>
+                    </div>
+
+                    {/* Remaining Payment Date After Completion */}
+                    <div className="p-3.5 bg-white rounded-xl border-2 border-indigo-200 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700">
+                          Remaining Payment Schedule Date
+                        </span>
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-300">
+                          To Be Updated
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-900 font-bold text-base mt-0.5">
+                        <Clock className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <span className="font-mono text-indigo-950 font-black">Updated After 1st Payment</span>
+                      </div>
+                      <span className="text-[10.5px] text-slate-500 font-medium">
+                        The payment date of ₹1,00,000 (1 Lakh) will be updated after the first payment is completed.
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Payment Method Selector Tabs */}
                   <div className="flex flex-col gap-2">
                     <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
@@ -6571,6 +6832,12 @@ export default function App() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Standby Corporate Applicants Dossier Modal */}
+      <StandbyCompaniesModal 
+        isOpen={showStandbyCompaniesModal} 
+        onClose={() => setShowStandbyCompaniesModal(false)} 
+      />
     </div>
   );
 }
