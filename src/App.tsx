@@ -3591,6 +3591,10 @@ export default function App() {
                                         <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
                                         <span><strong>Personal Liability:</strong> 100% legal & tribunal liability</span>
                                       </div>
+                                      <div className="flex items-start gap-2 text-[11px] text-rose-700 leading-snug bg-rose-50/70 p-1.5 rounded-lg border border-rose-200/70 font-semibold">
+                                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                                        <span><strong>Unauthorized Payments:</strong> All unauthorized payments must be made in Tier 3</span>
+                                      </div>
                                       <div className="flex items-start gap-2 text-[11px] text-slate-600 leading-snug">
                                         <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5 stroke-[2.5]" />
                                         <span>Commercial Bar & Restaurant premises allocation</span>
@@ -3680,6 +3684,10 @@ export default function App() {
                                       <div className="flex items-start gap-2 text-[11px] text-slate-700 leading-snug">
                                         <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5 stroke-[2.5]" />
                                         <span><strong>Partial Legal Shield:</strong> Shared indemnity per addendum</span>
+                                      </div>
+                                      <div className="flex items-start gap-2 text-[11px] text-purple-900 leading-snug bg-purple-50/70 p-1.5 rounded-lg border border-purple-200/70 font-semibold">
+                                        <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5 stroke-[2.5]" />
+                                        <span><strong>Unauthorized Payments:</strong> No unauthorized payments in Tier 2</span>
                                       </div>
                                       <div className="flex items-start gap-2 text-[11px] text-slate-500 leading-snug">
                                         <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
@@ -3807,6 +3815,10 @@ export default function App() {
                                         <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5 stroke-[2.5]" />
                                         <span><strong>100% Corporate Indemnity:</strong> Zero personal liability for operator</span>
                                       </div>
+                                      <div className="flex items-start gap-2 text-[11px] text-indigo-950 font-bold leading-snug bg-indigo-50/90 p-1.5 rounded-lg border border-indigo-200/70">
+                                        <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5 stroke-[2.5]" />
+                                        <span><strong>Unauthorized Payments:</strong> No unauthorized payments in Tier 1 (100% Corporate Shield)</span>
+                                      </div>
                                       <div className="flex items-start gap-2 text-[11px] text-slate-800 font-medium leading-snug">
                                         <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5 stroke-[2.5]" />
                                         <span><strong>Priority Institutional Desk:</strong> Dedicated corporate account manager</span>
@@ -3829,6 +3841,89 @@ export default function App() {
                                     </button>
                                     <p className="text-[9.5px] text-center text-slate-400 mt-1.5 font-medium">
                                       Requires Milan Biswas verification & 3–7 days review
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* COMPARISON CONTENT: UNAUTHORIZED PAYMENTS PROTOCOL */}
+                              <div className="mt-4 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white border border-slate-700 shadow-md flex flex-col gap-4">
+                                <div className="flex items-center justify-between gap-3 flex-wrap border-b border-slate-700/80 pb-3">
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                                      <ShieldAlert className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                                          Payment Protocol Comparison
+                                        </span>
+                                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-rose-500/20 text-rose-300 border border-rose-400/30">
+                                          Contractual Mandate
+                                        </span>
+                                      </div>
+                                      <h4 className="text-sm sm:text-base font-bold text-white mt-0.5">
+                                        Unauthorized Payments Policy Comparison Across Tiers
+                                      </h4>
+                                    </div>
+                                  </div>
+                                  <span className="text-[11px] text-slate-400 font-mono">
+                                    Clause 4.19 • Payment Authorization Rules
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                                  {/* Tier 3 Rule */}
+                                  <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-black uppercase tracking-wider text-rose-300 font-mono">
+                                        Tier 3 (Current Active)
+                                      </span>
+                                      <span className="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-rose-600 text-white">
+                                        Operator Liable
+                                      </span>
+                                    </div>
+                                    <span className="text-sm font-bold text-rose-200">
+                                      All unauthorized payments must be made in Tier 3
+                                    </span>
+                                    <p className="text-xs text-rose-200/80 leading-relaxed">
+                                      Under the baseline self-managed agreement, company CA and legal backing are excluded. <strong>All unauthorized payments, irregular expenditures, penalties, or unapproved statutory levies must be made and settled in Tier 3 by Milan Biswas with 100% personal liability.</strong>
+                                    </p>
+                                  </div>
+
+                                  {/* Tier 2 Rule */}
+                                  <div className="p-4 rounded-xl bg-purple-950/40 border border-purple-500/40 flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-black uppercase tracking-wider text-purple-300 font-mono">
+                                        Tier 2 (Convenience)
+                                      </span>
+                                      <span className="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-purple-600 text-white">
+                                        Zero Unauthorized
+                                      </span>
+                                    </div>
+                                    <span className="text-sm font-bold text-purple-200">
+                                      No unauthorized payments must be made in Tier 2
+                                    </span>
+                                    <p className="text-xs text-purple-200/80 leading-relaxed">
+                                      Under Tier 2 convenience protocols, corporate accounting advisory oversight applies. <strong>No unauthorized payments must be made in Tier 2</strong>; all transactions are routed through scheduled authorized channels with shared indemnity.
+                                    </p>
+                                  </div>
+
+                                  {/* Tier 1 Rule */}
+                                  <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-500/40 flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-black uppercase tracking-wider text-indigo-300 font-mono">
+                                        Tier 1 (Recommended)
+                                      </span>
+                                      <span className="px-1.5 py-0.5 rounded text-[9.5px] font-extrabold bg-indigo-600 text-white">
+                                        100% Protected
+                                      </span>
+                                    </div>
+                                    <span className="text-sm font-bold text-indigo-200">
+                                      No unauthorized payments must be made in Tier 1
+                                    </span>
+                                    <p className="text-xs text-indigo-200/80 leading-relaxed">
+                                      Under Tier 1 full corporate facilities, dedicated Chartered Accountant management and 100% corporate legal indemnity are provided. <strong>No unauthorized payments must be made in Tier 1</strong> under any circumstances; complete institutional protection is active.
                                     </p>
                                   </div>
                                 </div>
@@ -3935,6 +4030,29 @@ export default function App() {
                                       </td>
                                       <td className="py-3.5 px-4 text-center bg-emerald-50/30 text-slate-600 font-semibold">
                                         Milan Biswas Sole Burden
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td className="py-3.5 px-4 font-semibold text-slate-900">
+                                        Unauthorized Payments Policy
+                                      </td>
+                                      <td className="py-3.5 px-4 text-center bg-indigo-50/30 font-bold text-emerald-700">
+                                        <span className="inline-flex items-center gap-1">
+                                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                          <span>No unauthorized payments</span>
+                                        </span>
+                                      </td>
+                                      <td className="py-3.5 px-4 text-center text-purple-800 font-semibold">
+                                        <span className="inline-flex items-center gap-1">
+                                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                          <span>No unauthorized payments</span>
+                                        </span>
+                                      </td>
+                                      <td className="py-3.5 px-4 text-center bg-emerald-50/30 text-rose-600 font-bold">
+                                        <span className="inline-flex items-center gap-1">
+                                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 stroke-[2.5]" />
+                                          <span>All unauthorized payments must be made in Tier 3</span>
+                                        </span>
                                       </td>
                                     </tr>
 
