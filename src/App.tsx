@@ -1536,11 +1536,11 @@ export default function App() {
                                 </p>
                               </div>
 
-                              {/* Payment 2: PPF Account (Basanti Biswas) */}
+                              {/* Payment 2: Others Payments */}
                               <div className="p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 flex flex-col gap-2.5">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-black uppercase tracking-wider text-indigo-800">
-                                    PPF Channel Source
+                                    Payment Channel
                                   </span>
                                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
                                     Verified Channel
@@ -1548,7 +1548,7 @@ export default function App() {
                                 </div>
                                 <div className="text-base font-black text-indigo-950 flex items-center gap-1.5 flex-wrap">
                                   <Landmark className="w-4 h-4 text-indigo-600 shrink-0" />
-                                  <span>PPF — Basanti Biswas</span>
+                                  <span>Others Payments</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300/80 flex items-center gap-1 shadow-2xs">
@@ -1556,10 +1556,10 @@ export default function App() {
                                   </span>
                                 </div>
                                 <div className="text-xs text-indigo-900 font-medium">
-                                  Designated Bank & Provident Fund Remittance
+                                  Designated Remittance & Banking Allocation
                                 </div>
                                 <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-indigo-200/60">
-                                  Certain payments originated and were remitted through the registered Public Provident Fund (PPF) account of <strong>Basanti Biswas</strong> (Note: <strong>Interest Payment</strong>), officially logged and recognized in partner capital accounting.
+                                  Certain payments originated through other payment channels (Note: <strong>Interest Payment</strong>), officially logged and recognized in partner capital accounting.
                                 </p>
                               </div>
 
