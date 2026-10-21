@@ -472,32 +472,11 @@ export default function App() {
   };
 
   const handleExecuteTierPayment = (targetInstallment?: 'advance' | 'remaining' | 'full') => {
-    const chosen = targetInstallment || tierInstallmentChoice;
-    setIsProcessingTierPayment(true);
-    setTimeout(() => {
-      if (chosen === 'advance') {
-        const receiptId = 'pay_T2_ADV_' + Math.floor(10000000 + Math.random() * 90000000);
-        setTierAdvancePaidId(receiptId);
-        setTierInstallmentStage('advance_paid');
-        setTierPaymentSuccessId(receiptId);
-        setTierUpgradeReviewStatus('paid'); // Tier 2 is activated!
-        setTierInstallmentChoice('remaining');
-      } else if (chosen === 'remaining') {
-        const receiptId = 'pay_T2_REM_' + Math.floor(10000000 + Math.random() * 90000000);
-        setTierFinalPaidId(receiptId);
-        setTierInstallmentStage('fully_paid');
-        setTierPaymentSuccessId(receiptId);
-        setTierUpgradeReviewStatus('paid');
-      } else {
-        const receiptId = 'pay_T2_FULL_' + Math.floor(10000000 + Math.random() * 90000000);
-        setTierAdvancePaidId(receiptId);
-        setTierFinalPaidId(receiptId);
-        setTierInstallmentStage('fully_paid');
-        setTierUpgradeReviewStatus('paid');
-        setTierPaymentSuccessId(receiptId);
-      }
-      setIsProcessingTierPayment(false);
-    }, 1200);
+    if (targetInstallment) {
+      setTierInstallmentChoice(targetInstallment);
+    }
+    // Direct online automated clearance is blocked; user must contact administrator
+    setShowPaymentBlockModal(true);
   };
 
   // Listen for browser Back & Forward navigation events (popstate)
@@ -4862,38 +4841,88 @@ export default function App() {
       {/* Payment Block Modal */}
       <AnimatePresence>
         {showPaymentBlockModal && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 z-[70] animate-in fade-in duration-200">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative"
+              className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative border border-slate-200"
             >
               <button 
+                type="button"
                 onClick={() => setShowPaymentBlockModal(false)}
-                className="absolute right-4 top-4 p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="absolute right-4 top-4 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
               
-              <div className="flex flex-col items-center text-center gap-4 mt-2">
-                <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6" />
+              <div className="flex flex-col items-center text-center gap-3.5 mt-1">
+                <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
+                  <AlertTriangle className="w-7 h-7" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800">Action Required</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  Please contact the administrator before making this payment to verify your account status.
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-full">
+                    Compliance Verification
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900 mt-1">Action Required</h3>
+                  <p className="text-sm font-bold text-amber-900 mt-1">
+                    You should contact the administrator before making this payment.
+                  </p>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Direct online automated clearance is restricted. To complete your <strong className="text-purple-700">Tier 2 (RSPD Protocol)</strong> milestone settlement, you must verify your applicant credentials with the Indus administrator.
                 </p>
-                <div className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 mt-2 flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-500">Scheduled Date</span>
-                  <span className="text-sm font-bold text-slate-800">Sep 23rd - 24th</span>
+
+                {/* Account / Milestone Summary Card */}
+                <div className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-left text-xs space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Applicant:</span>
+                    <span className="font-bold text-slate-800">Milan Biswas</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Target Upgrade:</span>
+                    <span className="font-bold text-purple-700">Tier 2 (RSPD Protocol)</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Milestone Selected:</span>
+                    <span className="font-mono font-bold text-slate-900">
+                      {tierInstallmentChoice === 'advance'
+                        ? 'Part 1 Advance: ₹17,000 (To Activate)'
+                        : tierInstallmentChoice === 'remaining'
+                        ? 'Part 2 Remaining: ₹1,00,000 (1 Lakh)'
+                        : 'Full Net Settlement: ₹1,17,000'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200 text-amber-800 font-semibold">
+                    <span>Payment Status:</span>
+                    <span className="flex items-center gap-1">
+                      <Lock className="w-3.5 h-3.5" /> Administrator Hold
+                    </span>
+                  </div>
                 </div>
-                <button
-                  onClick={() => setShowPaymentBlockModal(false)}
-                  className="w-full py-3 mt-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-medium text-sm transition-colors cursor-pointer"
-                >
-                  Understood
-                </button>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2.5 w-full mt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPaymentBlockModal(false);
+                      setShowContactModal(true);
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-purple-600/25 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Contact Administrator</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPaymentBlockModal(false)}
+                    className="px-5 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Understood
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -6150,43 +6179,38 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Execute Button */}
-                  <div className="pt-2 flex flex-col gap-2">
+                  {/* Administrator Clearance Notice & Execute Button */}
+                  <div className="pt-2 flex flex-col gap-2.5">
+                    <div className="p-3 bg-amber-50/90 border border-amber-300/80 rounded-2xl flex items-start gap-2.5 text-xs text-amber-900">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="leading-snug">
+                        <strong className="block text-amber-950 font-bold">Administrator Clearance Required:</strong>
+                        Direct online gateway payment is restricted. You should contact the administrator before making this payment.
+                      </div>
+                    </div>
+
                     <button
                       type="button"
-                      disabled={isProcessingTierPayment}
                       onClick={() => handleExecuteTierPayment(tierInstallmentChoice)}
-                      className={`w-full py-3.5 rounded-xl text-white font-extrabold text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 disabled:opacity-75 disabled:cursor-wait ${
+                      className={`w-full py-3.5 rounded-xl text-white font-extrabold text-sm shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 ${
                         tierInstallmentChoice === 'advance'
                           ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-600/30'
                           : 'bg-gradient-to-r from-amber-600 via-indigo-600 to-amber-700 hover:from-amber-700 hover:to-indigo-700 shadow-amber-600/30'
                       }`}
                     >
-                      {isProcessingTierPayment ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Connecting to Indus Gateway & Clearing Payment...</span>
-                        </>
-                      ) : tierInstallmentChoice === 'advance' ? (
-                        <>
-                          <CreditCard className="w-4 h-4" />
-                          <span>Pay Advance ₹17,000 & Activate Tier 2</span>
-                        </>
-                      ) : tierInstallmentChoice === 'remaining' ? (
-                        <>
-                          <CreditCard className="w-4 h-4" />
-                          <span>Pay Remaining Balance ₹1,00,000 (1 Lakh)</span>
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="w-4 h-4" />
-                          <span>Pay Full Net {formatINR(calculateUpgradeCost('tier2').netPayable)} & Activate Tier 2</span>
-                        </>
-                      )}
+                      <CreditCard className="w-4 h-4 shrink-0" />
+                      <span>
+                        {tierInstallmentChoice === 'advance'
+                          ? 'Pay Advance ₹17,000 (Contact Administrator)'
+                          : tierInstallmentChoice === 'remaining'
+                          ? 'Pay Remaining ₹1,00,000 (Contact Administrator)'
+                          : `Pay Net ${formatINR(calculateUpgradeCost('tier2').netPayable)} (Contact Administrator)`}
+                      </span>
                     </button>
-                    <div className="flex items-center justify-center gap-1.5 text-[10px] font-semibold text-slate-400">
+
+                    <div className="flex items-center justify-center gap-1.5 text-[10px] font-semibold text-slate-500">
                       <Lock className="w-3 h-3 text-slate-400" />
-                      <span>256-Bit TLS Secured • Direct Treasury Clearance • Instant Receipt</span>
+                      <span>Treasury Compliance Protocol • Admin Verification Required Before Clearing</span>
                     </div>
                   </div>
                 </div>
