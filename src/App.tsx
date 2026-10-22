@@ -802,9 +802,41 @@ export default function App() {
         </div>
       </header>
 
+      {/* Top Global Red & Black Payment Alert Ticker (Right Below Header) */}
+      {isLoggedIn && !isContractCancelled && (
+        <div className="w-full bg-gradient-to-r from-black via-rose-950 to-black text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg border-b-2 border-rose-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-20">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-rose-600/30 border border-rose-500/50 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 animate-pulse">
+              <AlertTriangle className="w-4 h-4 text-rose-300" />
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-left">
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs shrink-0 w-fit">
+                Payment Alert Ticker
+              </span>
+              <p className="text-xs text-rose-100 font-medium leading-relaxed">
+                The payment time for <strong className="text-white font-black underline decoration-amber-400">₹17,000</strong> is between <strong className="text-amber-300 font-bold">October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong className="text-white font-black underline decoration-amber-400">₹1,00,000</strong> is <strong className="text-amber-300 font-bold">November 2, 2026</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setTierInstallmentChoice('advance');
+                setShowTierPaymentModal(true);
+              }}
+              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
+            >
+              <span>Pay Advance ₹17,000</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Global Contract Cancellation & Liquidation Banner */}
       {isLoggedIn && isContractCancelled && (
-        <div className="w-full bg-gradient-to-r from-rose-900 via-rose-800 to-slate-900 text-white px-4 sm:px-6 py-3.5 shadow-md border-b border-rose-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-10">
+        <div className="w-full bg-gradient-to-r from-black via-rose-950 to-black text-white px-4 sm:px-6 py-3.5 shadow-md border-b-2 border-rose-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-10">
           <div className="flex items-start sm:items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
               <ShieldAlert className="w-5 h-5 text-rose-300" />
@@ -829,6 +861,12 @@ export default function App() {
                 </button>
                 . All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
               </p>
+              <div className="mt-1 flex items-center gap-2 bg-black/40 border border-rose-500/50 px-2.5 py-1 rounded-lg text-xs text-rose-100">
+                <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span>
+                  <strong>Strict Payment Alert:</strong> The payment time for <strong>₹17,000</strong> is between <strong>October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong>₹1,00,000</strong> is <strong>November 2, 2026</strong>.
+                </span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto flex-wrap">
@@ -1102,7 +1140,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Tier 2 Upgrade Approved Payment Alert Tracker */}
                   {!isContractCancelled && !showOpeningSchedule && tierUpgradeReviewStatus === 'approved' && tierInstallmentStage === 'advance_due' && (
                     <div className="bg-gradient-to-r from-purple-50/95 via-indigo-50/95 to-emerald-50/90 backdrop-blur border-2 border-purple-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="flex items-start gap-3.5">
@@ -1112,7 +1149,7 @@ export default function App() {
                         <div className="flex flex-col gap-0.5 text-xs">
                           <div className="flex items-center gap-2 flex-wrap mb-0.5">
                             <span className="font-black uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] tracking-wider border border-emerald-300 flex items-center gap-1">
-                              <Check className="w-3 h-3 stroke-[3]" />
+                              <Check className="w-3.5 h-3.5 stroke-[3]" />
                               Tier 2 Upgrade Review Approved
                             </span>
                             <span className="font-mono text-slate-500 text-[11px]">Ref: {upgradeTrackingCode}</span>
@@ -5337,6 +5374,27 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Red and Black Payment Alert Banner / Ticker */}
+                  <div className="p-3.5 rounded-2xl bg-gradient-to-r from-black via-rose-950 to-black border-2 border-rose-600 text-white flex items-start gap-3 shadow-md relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-rose-600/20 via-transparent to-transparent pointer-events-none"></div>
+                    <div className="p-1.5 rounded-lg bg-rose-600/30 text-rose-300 border border-rose-500/50 shrink-0 mt-0.5 animate-pulse relative z-10">
+                      <AlertTriangle className="w-4 h-4 text-rose-400" />
+                    </div>
+                    <div className="flex flex-col gap-0.5 text-xs text-rose-100 relative z-10">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[9.5px] font-black uppercase tracking-wider bg-rose-600 text-white px-2 py-0.5 rounded shadow-xs">
+                          Payment Alert Ticker
+                        </span>
+                        <strong className="text-white font-bold text-xs">
+                          If you cancel here — Strict Payment Schedule:
+                        </strong>
+                      </div>
+                      <p className="leading-relaxed mt-0.5 text-slate-200 text-xs">
+                        The payment time for <strong className="text-white font-black underline decoration-amber-400">₹17,000</strong> is between <strong className="text-amber-300 font-bold">October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong className="text-white font-black underline decoration-amber-400">₹1,00,000</strong> is <strong className="text-amber-300 font-bold">November 2, 2026</strong>.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Final Review & Settlement Terms Notice */}
                   <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200/90 flex items-start gap-3">
                     <div className="p-1 rounded bg-amber-200/70 text-amber-900 shrink-0 mt-0.5">
@@ -6355,22 +6413,22 @@ export default function App() {
 
                   {/* Payment Dates Schedule: Last Date & Remaining Date */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {/* Last Payment Date */}
+                    {/* Advance Payment Window */}
                     <div className="p-3.5 bg-white rounded-xl border-2 border-rose-200 shadow-2xs flex flex-col gap-1">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">
-                          Last Payment Date (Advance)
+                          Advance Payment Window (₹17,000)
                         </span>
                         <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                          Final Deadline
+                          Oct 23 – Oct 24 (11:00 AM)
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-900 font-bold text-base mt-0.5">
+                      <div className="flex items-center gap-2 text-slate-900 font-bold text-sm sm:text-base mt-0.5">
                         <Calendar className="w-4 h-4 text-rose-600 shrink-0" />
-                        <span className="font-mono text-rose-950 font-black">24-10-2026</span>
+                        <span className="font-mono text-rose-950 font-black">Between Oct 23 & 11:00 AM on 24th</span>
                       </div>
                       <span className="text-[10.5px] text-slate-500 font-medium">
-                        Last date to remit ₹17,000 advance to lock Tier 2 activation.
+                        Payment time for ₹17,000 is between October 23 and 11:00 AM on October 24, 2026.
                       </span>
                     </div>
 
@@ -6378,18 +6436,18 @@ export default function App() {
                     <div className="p-3.5 bg-white rounded-xl border-2 border-indigo-200 shadow-2xs flex flex-col gap-1">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700">
-                          Remaining Payment Schedule Date
+                          Remaining Payment Date (₹1,00,000)
                         </span>
                         <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-300">
-                          To Be Updated
+                          November 2, 2026
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-slate-900 font-bold text-base mt-0.5">
                         <Clock className="w-4 h-4 text-indigo-600 shrink-0" />
-                        <span className="font-mono text-indigo-950 font-black">Updated After 1st Payment</span>
+                        <span className="font-mono text-indigo-950 font-black">02-11-2026 (November 2, 2026)</span>
                       </div>
                       <span className="text-[10.5px] text-slate-500 font-medium">
-                        The payment date of ₹1,00,000 (1 Lakh) will be updated after the first payment is completed.
+                        The time for the remaining ₹1,00,000 (1 Lakh) balance is November 2, 2026.
                       </span>
                     </div>
                   </div>
