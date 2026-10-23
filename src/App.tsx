@@ -809,12 +809,22 @@ export default function App() {
             <div className="w-8 h-8 rounded-xl bg-rose-600/30 border border-rose-500/50 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 animate-pulse">
               <AlertTriangle className="w-4 h-4 text-rose-300" />
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-left">
-              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs shrink-0 w-fit">
-                Payment Alert Ticker
-              </span>
-              <p className="text-xs text-rose-100 font-medium leading-relaxed">
-                The payment time for <strong className="text-white font-black underline decoration-amber-400">₹17,000</strong> is between <strong className="text-amber-300 font-bold">October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong className="text-white font-black underline decoration-amber-400">₹1,00,000</strong> is <strong className="text-amber-300 font-bold">November 2, 2026</strong>.
+            <div className="flex flex-col gap-1.5 text-left">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs shrink-0 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                  Payment Alert
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-black shadow-xs shrink-0 font-mono">
+                  Today's Due
+                </span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold text-amber-200 bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-amber-500/20 border border-amber-400/50 shadow-xs backdrop-blur-xs">
+                  <span className="text-amber-300">⚠️</span>
+                  <span><strong className="text-amber-100 font-extrabold">Note:</strong> This is the last chance, make the right decision and move forward.</span>
+                </div>
+              </div>
+              <p className="text-xs text-rose-100/95 font-medium leading-relaxed">
+                Payment has started from today (<strong className="text-amber-300 font-bold">today's due</strong>). If not completed today, payment must be completed by <strong className="text-white font-black underline decoration-amber-400">11:00 AM tomorrow (October 24, 2026)</strong> for Advance <strong className="text-white font-black">₹17,000</strong> (Remaining <strong className="text-white font-black">₹1,00,000</strong> due November 2, 2026).
               </p>
             </div>
           </div>
@@ -825,7 +835,7 @@ export default function App() {
                 setTierInstallmentChoice('advance');
                 setShowTierPaymentModal(true);
               }}
-              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
             >
               <span>Pay Advance ₹17,000</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -841,7 +851,7 @@ export default function App() {
             <div className="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
               <ShieldAlert className="w-5 h-5 text-rose-300" />
             </div>
-            <div className="flex flex-col gap-0.5 text-left">
+            <div className="flex flex-col gap-1 text-left">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-black uppercase tracking-wider text-rose-200 bg-rose-950/70 px-2 py-0.5 rounded border border-rose-500/40">
                   ALL CONTRACTS CANCELLED & REVOKED
@@ -861,10 +871,14 @@ export default function App() {
                 </button>
                 . All system functions, transactions, payments, downloads, and requests are permanently locked and cannot be clicked.
               </p>
-              <div className="mt-1 flex items-center gap-2 bg-black/40 border border-rose-500/50 px-2.5 py-1 rounded-lg text-xs text-rose-100">
-                <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-2 bg-black/60 border border-rose-500/60 px-3 py-1.5 rounded-lg text-xs text-rose-100">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <strong className="text-amber-300 font-bold">Notice of Payment:</strong>
+                </div>
                 <span>
-                  <strong>Strict Payment Alert:</strong> The payment time for <strong>₹17,000</strong> is between <strong>October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong>₹1,00,000</strong> is <strong>November 2, 2026</strong>.
+                  Payment has started from today (today's due). If not completed today, payment must be completed by <strong className="text-amber-300">11:00 AM tomorrow (October 24)</strong> for <strong>₹17,000 advance</strong> (Remaining <strong>₹1,00,000</strong> on <strong>November 2, 2026</strong>).
+                  <span className="block sm:inline sm:ml-2 text-amber-300 font-extrabold">• Note: This is the last chance, make the right decision and move forward.</span>
                 </span>
               </div>
             </div>
@@ -1163,6 +1177,19 @@ export default function App() {
                           <p className="text-slate-600 leading-relaxed font-medium mt-0.5">
                             To activate your Tier 2 (RSPD Protocol) contract, the first <strong>₹17,000 will have to be paid in advance</strong>. After activation, the remaining <strong>1 Lakh (₹1,00,000)</strong> will have to be paid.
                           </p>
+                          <div className="mt-2 p-2.5 rounded-xl bg-gradient-to-r from-rose-50 via-amber-50 to-rose-50 border border-rose-300/80 text-rose-950 flex flex-col gap-1 shadow-2xs">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white">Payment Notice</span>
+                              <strong className="text-xs font-bold text-rose-900">Payment has started from today (Today's Due)</strong>
+                              <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-1.5 py-0.2 rounded border border-amber-300">Deadline: Tomorrow 11:00 AM</span>
+                            </div>
+                            <p className="text-[11.5px] text-rose-800 font-medium">
+                              If not completed today, payment must be completed by <strong>11:00 AM tomorrow (October 24, 2026)</strong>.
+                            </p>
+                            <span className="text-[10.5px] font-bold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md w-fit border border-amber-300/80 flex items-center gap-1">
+                              ⚠️ Note: This is the last chance, make the right decision and move forward.
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 self-start md:self-auto flex-wrap">
@@ -1631,6 +1658,56 @@ export default function App() {
                                 <p className="leading-relaxed">
                                   The payments you made earlier are accounted for, tracked, and settled <strong>individually</strong>. Each transaction remains distinct with its own receipt reference, ensuring complete transparent reconciliation without pooling or arbitrary deductions.
                                 </p>
+                              </div>
+                            </div>
+
+                            {/* COURT AGREEMENT PROGRESS & LEGAL DOCUMENTATION (MOVED TO BOTTOM OF AGREEMENT & ROLES) */}
+                            <div className="bg-white/95 backdrop-blur-md p-6 sm:p-7 rounded-3xl border-2 border-slate-300 shadow-lg flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                                <div className="flex items-start gap-3">
+                                  <div className="p-3 rounded-2xl bg-amber-100 text-amber-800 border border-amber-300 shrink-0">
+                                    <Scale className="w-5 h-5 text-amber-700 stroke-[2.5]" />
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                                      <span className="text-sm font-bold text-slate-900 tracking-tight">Court Agreement Progress</span>
+                                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                                        Pushed / Pending Tier 2 Reactivation
+                                      </span>
+                                    </div>
+                                    <span className="text-[11px] font-medium text-slate-500 uppercase tracking-widest block">
+                                      Legal Documentation & Registry Status
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-3.5">
+                                <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-amber-950 leading-relaxed flex flex-col gap-2 shadow-xs">
+                                  <div className="flex items-center gap-2 font-bold text-amber-900 text-xs sm:text-sm">
+                                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                    <span>Reactivation & Tier 2 Upgrade Notice:</span>
+                                  </div>
+                                  <p>
+                                    The user previously canceled / revoked the commercial agreement once and is now reactivating and upgrading to <strong>Tier 2 (Institutional Direct Channel)</strong>.
+                                  </p>
+                                  <p>
+                                    Due to this contractual cancellation and ongoing reactivation/upgrade, the previous <strong>Court Agreement execution timeline has been officially pushed / held</strong>. The previous processing bar has been removed.
+                                  </p>
+                                  <p className="text-amber-800 font-medium pt-1 border-t border-amber-200/60">
+                                    <em>Note: When the agreement process starts anew following Tier 2 settlement clearance, a newly calibrated legal court process bar will become active and visible here.</em>
+                                  </p>
+                                </div>
+
+                                <div className="p-3.5 bg-blue-50/70 rounded-2xl border border-blue-200/80 flex items-start gap-3">
+                                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <strong className="text-xs font-bold text-blue-950">Status Update: Barasat Court Legal Registry</strong>
+                                    <p className="text-[11px] font-medium text-blue-900 leading-relaxed">
+                                      The owner whose signature is pending will coordinate documentation at the Barasat Court once the new schedule date is announced. The user is not required to visit the court physically.
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -2289,49 +2366,178 @@ export default function App() {
                           <div className="flex flex-col gap-6 animate-in fade-in duration-300">
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Payment Status & Overview</span>
-                              {!paymentSuccessId && (
-                                <div className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-100/50">
-                                  <AlertTriangle className="w-3.5 h-3.5" />
-                                  Action Required
+                              {tierInstallmentStage !== 'fully_paid' && (
+                                <div className="px-3 py-1 bg-rose-50 text-rose-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-rose-200">
+                                  <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                                  Payment Due • Action Required
                                 </div>
                               )}
                             </div>
 
-                            {paymentSuccessId && (
-                              <div className="flex flex-col gap-5 mb-2">
+                            {/* User is upgrading to Tier 2, total amount left, payment due */}
+                            <div className="flex flex-col gap-5 mb-2">
+                              {tierInstallmentStage === 'fully_paid' ? (
                                 <div className="flex items-center gap-3 bg-emerald-50/80 text-emerald-800 p-4 rounded-2xl border border-emerald-100/60 font-semibold shadow-sm animate-in fade-in slide-in-from-top-2">
                                   <Check className="w-5 h-5 text-emerald-600 shrink-0 stroke-[3]" />
-                                  You have no outstanding payments.
+                                  All Tier 2 Upgrade Payments Completed & Settled.
                                 </div>
-                                
-                                <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl border border-emerald-100/80 flex flex-col gap-4 w-full shadow-[0_8px_30px_rgb(16,185,129,0.12)] animate-in fade-in slide-in-from-top-4">
-                                  <div className="flex flex-col gap-3">
-                                    <div className="flex justify-between items-end">
-                                      <div className="flex flex-col text-left gap-1">
-                                        <span className="text-sm font-bold text-slate-900 tracking-tight">Court Agreement Progress</span>
-                                        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Active Processing</span>
+                              ) : (
+                                <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50/70 p-5 sm:p-6 rounded-3xl border-2 border-amber-300 shadow-sm flex flex-col gap-4 animate-in fade-in slide-in-from-top-2">
+                                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200/80 pb-4">
+                                    <div className="flex items-start gap-3">
+                                      <div className="p-2.5 rounded-2xl bg-amber-500 text-white shadow-sm mt-0.5">
+                                        <Clock className="w-5 h-5 stroke-[2.5]" />
                                       </div>
-                                      <span className="text-2xl font-black text-emerald-600 tracking-tighter">98%</span>
-                                    </div>
-                                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner ring-1 ring-inset ring-slate-200/50">
-                                      <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full relative overflow-hidden" style={{ width: '98%' }}>
-                                        <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                      <div>
+                                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                                            Contract Upgrade In Progress
+                                          </span>
+                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1">
+                                            <AlertTriangle className="w-3 h-3 text-rose-600 stroke-[3]" />
+                                            Payment Due
+                                          </span>
+                                        </div>
+                                        <h4 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                                          User Upgrading to Tier 2 • Total Amount Remaining
+                                        </h4>
+                                        <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                                          The user is currently upgrading to <strong>Tier 2 (Institutional Direct Channel)</strong>. The total settlement amount is remaining, and payments are due per the 2-part schedule.
+                                        </p>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></div>
-                                      <p className="text-xs font-semibold text-emerald-700">Processing legal documentation and verifying signatures...</p>
+
+                                    <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1 bg-white/90 sm:bg-transparent p-3 sm:p-0 rounded-2xl border sm:border-0 border-amber-200/80">
+                                      <span className="text-[10px] uppercase font-extrabold text-slate-400 block tracking-wider">
+                                        {tierInstallmentStage === 'advance_paid' ? 'Remaining Amount Left' : 'Total Amount Left'}
+                                      </span>
+                                      <span className="text-2xl sm:text-3xl font-black text-rose-600 font-mono">
+                                        {tierInstallmentStage === 'advance_paid' ? '₹1,00,000' : '₹1,17,000'}
+                                      </span>
+                                      <span className="text-[10px] text-amber-800 font-bold">2-Part Upgrade Schedule</span>
                                     </div>
-                                    <div className="mt-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100/50 flex items-start gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
-                                      <p className="text-[11px] font-medium text-blue-800 leading-relaxed">
-                                        <strong className="font-bold">Status Update:</strong> The owner whose signature is still pending is currently at the Barasat Court.
+                                  </div>
+
+                                  {/* Payment Urgent Notice Banner */}
+                                  <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/80 to-rose-50 rounded-2xl border-2 border-rose-300 flex items-start gap-3 text-xs text-rose-950 shadow-xs">
+                                    <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                                    <div className="flex flex-col gap-1 w-full">
+                                      <div className="flex items-center justify-between flex-wrap gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                                            PAYMENT NOTICE
+                                          </span>
+                                          <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                                            Payment has started from today (Today's Due)
+                                          </strong>
+                                        </div>
+                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                          Deadline: Tomorrow 11:00 AM
+                                        </span>
+                                      </div>
+                                      <p className="text-rose-800 font-medium text-[11.5px] leading-relaxed">
+                                        Payment has started from today — today's due. If not completed today, payment must be completed by <strong>11:00 AM tomorrow (October 24, 2026)</strong>.
                                       </p>
+                                      <div className="p-1.5 px-2.5 rounded-lg bg-amber-100/90 border border-amber-300 text-amber-950 text-[11px] font-bold flex items-center gap-1.5 mt-0.5 w-fit">
+                                        <span>⚠️ Note: This is the last chance, make the right decision and move forward.</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Schedule Breakdown Cards */}
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                    <div className={`p-4 rounded-2xl border-2 flex flex-col justify-between gap-3 ${
+                                      tierInstallmentStage === 'advance_paid'
+                                        ? 'bg-emerald-50/60 border-emerald-300'
+                                        : 'bg-white border-rose-400 shadow-xs ring-2 ring-rose-500/10'
+                                    }`}>
+                                      <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                          <div className="flex items-center gap-1.5 mb-1">
+                                            {tierInstallmentStage !== 'advance_paid' && (
+                                              <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+                                            )}
+                                            <span className={`text-[10px] font-black uppercase tracking-wider ${
+                                              tierInstallmentStage === 'advance_paid' ? 'text-emerald-700' : 'text-rose-700'
+                                            }`}>
+                                              {tierInstallmentStage === 'advance_paid' ? 'Part 1 • Completed' : 'Part 1 • Immediate Advance (Today\'s Due)'}
+                                            </span>
+                                          </div>
+                                          <div className="text-sm font-bold text-slate-900">Advance Activation Payment</div>
+                                          <div className="text-xs text-slate-600 mt-1 leading-relaxed">
+                                            Payment has started today (<strong>Today's Due</strong>). If not today, must be completed by <strong>11:00 AM tomorrow (Oct 24, 2026)</strong>.
+                                          </div>
+                                          <div className="mt-1.5 text-[10px] font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block">
+                                            Note: This is the last chance, make the right decision and move forward.
+                                          </div>
+                                        </div>
+                                        <span className={`text-lg font-black font-mono shrink-0 ${
+                                          tierInstallmentStage === 'advance_paid' ? 'text-emerald-700' : 'text-rose-600'
+                                        }`}>
+                                          ₹17,000
+                                        </span>
+                                      </div>
+
+                                      {tierInstallmentStage === 'advance_paid' ? (
+                                        <div className="text-xs font-bold text-emerald-800 bg-emerald-100/80 py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-emerald-200">
+                                          <Check className="w-4 h-4 stroke-[3]" />
+                                          Advance Paid & Verified
+                                        </div>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setTierInstallmentChoice('advance');
+                                            setShowTierPaymentModal(true);
+                                          }}
+                                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs shadow-md hover:shadow-rose-500/20 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                          <span>Pay Advance ₹17,000 Now</span>
+                                          <ArrowRight className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
+                                    </div>
+
+                                    <div className={`p-4 rounded-2xl border flex flex-col justify-between gap-3 ${
+                                      tierInstallmentStage === 'advance_paid'
+                                        ? 'bg-white border-purple-300 shadow-xs'
+                                        : 'bg-slate-50/80 border-slate-200/80'
+                                    }`}>
+                                      <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
+                                            Part 2 • Remaining Balance
+                                          </span>
+                                          <div className="text-sm font-bold text-slate-900">Remaining Balance Payment</div>
+                                          <div className="text-xs text-slate-500 mt-0.5">
+                                            Schedule Date: <strong>02-11-2026</strong> (Post-Advance)
+                                          </div>
+                                        </div>
+                                        <span className="text-lg font-black text-slate-800 font-mono">₹1,00,000</span>
+                                      </div>
+
+                                      {tierInstallmentStage === 'advance_paid' ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setTierInstallmentChoice('remaining');
+                                            setShowTierPaymentModal(true);
+                                          }}
+                                          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-sm active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                          <span>Pay Remaining ₹1,00,000</span>
+                                          <ArrowRight className="w-3.5 h-3.5" />
+                                        </button>
+                                      ) : (
+                                        <div className="text-[11px] font-medium text-slate-500 bg-white p-2 rounded-xl border border-slate-200/60 text-center">
+                                          Unlocks upon Advance Clearance
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
+                            </div>
 
                             {/* Tier 2 Upgrade Settlement Invoice & Payment Card */}
                             {tierUpgradeReviewStatus === 'approved' && (
@@ -2366,6 +2572,32 @@ export default function App() {
                                       {formatINR(calculateUpgradeCost('tier2').netPayable)}
                                     </span>
                                     <span className="text-[10px] text-slate-500 font-medium">₹17,000 Advance + ₹1,00,000 Rem.</span>
+                                  </div>
+                                </div>
+
+                                {/* Urgent Notice of Payment Banner */}
+                                <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/80 to-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-3 shadow-xs">
+                                  <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                                  <div className="flex flex-col gap-1 text-xs text-rose-950 flex-1">
+                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                      <div className="flex items-center gap-2">
+                                        <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                                          PAYMENT NOTICE
+                                        </span>
+                                        <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                                          Payment has started from today — Today's Due
+                                        </strong>
+                                      </div>
+                                      <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                                        Deadline: 11:00 AM Tomorrow
+                                      </span>
+                                    </div>
+                                    <p className="text-rose-800 font-medium text-[11.5px] leading-relaxed">
+                                      Payment has started from today (today's due). If not completed today, payment must be completed by <strong>11:00 AM tomorrow (October 24, 2026)</strong>.
+                                    </p>
+                                    <div className="p-1.5 px-2.5 rounded-lg bg-amber-100/90 border border-amber-300 text-amber-950 text-[11px] font-bold flex items-center gap-1.5 mt-0.5 w-fit">
+                                      <span>⚠️ Note: This is the last chance, make the right decision and move forward.</span>
+                                    </div>
                                   </div>
                                 </div>
 
@@ -2414,16 +2646,21 @@ export default function App() {
                                             Cleared & Active
                                           </span>
                                         ) : (
-                                          <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-extrabold border border-amber-300 flex items-center gap-1">
-                                            <Zap className="w-3 h-3" />
-                                            Pay in Advance to Activate
+                                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-extrabold border border-rose-300 flex items-center gap-1">
+                                            <Zap className="w-3 h-3 text-amber-500" />
+                                            Today's Due • Until 11:00 AM
                                           </span>
                                         )}
                                       </div>
                                       <div className="text-2xl font-black text-slate-900 font-mono">₹17,000</div>
-                                      <p className="text-[11px] text-slate-600 mt-1 leading-snug">
-                                        This first ₹17,000 will have to be paid in advance to activate the Tier 2 agreement and initiate CA consultation.
+                                      <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                                        This first ₹17,000 will have to be paid in advance to activate the Tier 2 agreement and initiate CA consultation. Payment started today (<strong className="text-slate-800">today's due</strong>); if not completed today, must be completed by <strong className="text-rose-700">11:00 AM tomorrow</strong>.
                                       </p>
+                                      {tierInstallmentStage === 'advance_due' && (
+                                        <div className="mt-1.5 text-[10px] font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block">
+                                          Note: This is the last chance, make the right decision and move forward.
+                                        </div>
+                                      )}
                                     </div>
 
                                     {tierInstallmentStage === 'advance_due' ? (
@@ -3501,11 +3738,22 @@ export default function App() {
                                       <span>
                                         Schedule: <strong className="font-mono text-purple-900 font-bold">₹17,000 Advance</strong> + <strong className="font-mono text-slate-800 font-bold">₹1,00,000 Rem.</strong>
                                       </span>
-                                      <span>•</span>
-                                      <span className="text-rose-700 font-bold">
-                                        Last Payment Date: 24-10-2026 (Remaining 1 Lakh date updated after 1st payment)
-                                      </span>
-                                    </div>
+                                      </div>
+                                     {tierInstallmentStage === 'advance_due' && (
+                                       <div className="mt-2.5 p-3 rounded-2xl bg-gradient-to-r from-rose-50 via-amber-50 to-rose-50 border border-rose-300 text-xs text-rose-950 flex flex-col gap-1 shadow-2xs">
+                                         <div className="flex items-center gap-2 flex-wrap">
+                                           <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-rose-600 text-white">Payment Notice</span>
+                                           <strong className="text-rose-900 font-bold text-xs">Payment has started from today (Today's Due)</strong>
+                                           <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-1.5 py-0.2 rounded border border-amber-300">Deadline: Tomorrow 11:00 AM</span>
+                                         </div>
+                                         <p className="text-[11.5px] text-rose-800 font-medium">
+                                           Payment has started from today — today's due. If not completed today, payment must be completed by <strong>11:00 AM tomorrow (October 24, 2026)</strong>.
+                                         </p>
+                                         <span className="text-[11px] font-bold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md w-fit border border-amber-300/80 flex items-center gap-1">
+                                           ⚠️ Note: This is the last chance, make the right decision and move forward.
+                                         </span>
+                                       </div>
+                                     )}
                                   </div>
                                 </div>
                                 <div className="flex sm:flex-col gap-2 shrink-0">
@@ -3773,13 +4021,23 @@ export default function App() {
                                         <ArrowUpRight className="w-3.5 h-3.5" />
                                       </button>
                                     )}
-                                    <p className="text-[9.5px] text-center text-slate-400 mt-1.5 font-medium">
-                                      {tierInstallmentStage === 'fully_paid'
-                                        ? 'Tier 2 contract 100% formalized'
-                                        : tierInstallmentStage === 'advance_paid'
-                                          ? 'Tier 2 is active • Settle remaining 1 Lakh'
-                                          : 'Review approved • Pay ₹17,000 advance to activate'}
-                                    </p>
+                                    {tierInstallmentStage === 'advance_due' && tierUpgradeReviewStatus === 'approved' ? (
+                                      <div className="mt-2 p-2 rounded-lg bg-rose-50 border border-rose-200 text-left text-[10px] text-rose-900 leading-snug">
+                                        <div className="font-bold text-rose-950">Notice: Payment started today (Today's Due)</div>
+                                        <div className="text-rose-800">Must be completed by <strong>11:00 AM tomorrow (24-10-2026)</strong>.</div>
+                                        <div className="mt-1 font-bold text-amber-900 bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300/80">
+                                          ⚠️ Note: This is the last chance, make the right decision and move forward.
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <p className="text-[9.5px] text-center text-slate-400 mt-1.5 font-medium">
+                                        {tierInstallmentStage === 'fully_paid'
+                                          ? 'Tier 2 contract 100% formalized'
+                                          : tierInstallmentStage === 'advance_paid'
+                                            ? 'Tier 2 is active • Settle remaining 1 Lakh'
+                                            : 'Review approved • Pay ₹17,000 advance to activate'}
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
 
@@ -4708,6 +4966,13 @@ export default function App() {
                                               <CreditCard className="w-4 h-4 shrink-0" />
                                               <span>Pay Advance ₹17,000</span>
                                             </button>
+                                            <div className="mt-2 p-2 rounded-lg bg-rose-50 border border-rose-200 text-left text-[10px] text-rose-900 leading-snug">
+                                              <div className="font-bold text-rose-950">Payment started today (Today's Due)</div>
+                                              <div className="text-rose-800">Must be completed by <strong>11:00 AM tomorrow (24-10-2026)</strong>.</div>
+                                              <div className="mt-1 font-bold text-amber-900 bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300/80">
+                                                ⚠️ Note: This is the last chance, make the right decision and move forward.
+                                              </div>
+                                            </div>
                                             <span className="text-[10.5px] text-center font-semibold text-purple-700 block mt-1.5">
                                               Activates Tier 2 & Corporate CA
                                             </span>
@@ -5380,18 +5645,24 @@ export default function App() {
                     <div className="p-1.5 rounded-lg bg-rose-600/30 text-rose-300 border border-rose-500/50 shrink-0 mt-0.5 animate-pulse relative z-10">
                       <AlertTriangle className="w-4 h-4 text-rose-400" />
                     </div>
-                    <div className="flex flex-col gap-0.5 text-xs text-rose-100 relative z-10">
+                    <div className="flex flex-col gap-1 text-xs text-rose-100 relative z-10">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[9.5px] font-black uppercase tracking-wider bg-rose-600 text-white px-2 py-0.5 rounded shadow-xs">
-                          Payment Alert Ticker
+                          Payment Notice
+                        </span>
+                        <span className="text-[9.5px] font-black uppercase tracking-wider bg-amber-400 text-black px-2 py-0.5 rounded shadow-xs">
+                          Today's Due
                         </span>
                         <strong className="text-white font-bold text-xs">
-                          If you cancel here — Strict Payment Schedule:
+                          If you cancel here — Payment Notice:
                         </strong>
                       </div>
                       <p className="leading-relaxed mt-0.5 text-slate-200 text-xs">
-                        The payment time for <strong className="text-white font-black underline decoration-amber-400">₹17,000</strong> is between <strong className="text-amber-300 font-bold">October 23 and 11:00 AM on the 24th</strong>. And the time for the remaining <strong className="text-white font-black underline decoration-amber-400">₹1,00,000</strong> is <strong className="text-amber-300 font-bold">November 2, 2026</strong>.
+                        Payment has started from today (<strong className="text-amber-300 font-bold">today's due</strong>). If not completed today, payment must be completed by <strong className="text-white font-black underline decoration-amber-400">11:00 AM tomorrow (October 24, 2026)</strong> for Advance <strong className="text-white font-black">₹17,000</strong> (Remaining <strong className="text-white font-black">₹1,00,000</strong> due November 2, 2026).
                       </p>
+                      <div className="text-[11px] font-bold text-amber-300 bg-black/40 border border-amber-400/40 px-2 py-0.5 rounded w-fit flex items-center gap-1.5 mt-0.5">
+                        <span>⚠️ Note: This is the last chance, make the right decision and move forward.</span>
+                      </div>
                     </div>
                   </div>
 
@@ -6393,43 +6664,57 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Warning: Last Chance Directive */}
-                  <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/70 to-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-3 shadow-xs">
+                  {/* Warning: Notice of Payment & Last Chance Directive */}
+                  <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/80 to-rose-50 border-2 border-rose-300 rounded-2xl flex items-start gap-3 shadow-xs">
                     <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                    <div className="flex flex-col gap-1 text-xs text-rose-950">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
-                          FINAL WARNING DIRECTIVE
+                    <div className="flex flex-col gap-1.5 text-xs text-rose-950 flex-1">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                            PAYMENT NOTICE
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-400 text-black shadow-2xs">
+                            TODAY'S DUE
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                          Deadline: Tomorrow 11:00 AM
                         </span>
-                        <strong className="text-rose-950 font-bold text-xs sm:text-sm">
-                          This is the last chance, move forward with the right decision.
-                        </strong>
                       </div>
-                      <p className="text-rose-800 leading-relaxed font-medium text-[11px]">
-                        The company has established the final schedule for this transaction. Adhere strictly to the dates below—no further grace periods, alterations, or repeated opportunities will be granted.
+                      <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                        Payment has started from today — today's due. If not today, payment must be completed by 11:00 AM tomorrow (October 24, 2026).
+                      </strong>
+                      <p className="text-rose-800 leading-relaxed font-medium text-[11.5px]">
+                        The company has established the strict schedule for this transaction. Settle the ₹17,000 advance now to activate your Tier 2 agreement and initiate CA advisory.
                       </p>
+                      <div className="p-2 rounded-xl bg-amber-100/95 border border-amber-300 text-amber-950 text-xs font-bold flex items-center gap-2 shadow-2xs w-fit">
+                        <span>⚠️ Note: This is the last chance, make the right decision and move forward.</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* Payment Dates Schedule: Last Date & Remaining Date */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Advance Payment Window */}
-                    <div className="p-3.5 bg-white rounded-xl border-2 border-rose-200 shadow-2xs flex flex-col gap-1">
+                    <div className="p-3.5 bg-white rounded-xl border-2 border-rose-300 shadow-2xs flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">
                           Advance Payment Window (₹17,000)
                         </span>
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                          Oct 23 – Oct 24 (11:00 AM)
+                        <span className="px-2 py-0.5 rounded text-[9px] font-extrabold bg-rose-100 text-rose-900 border border-rose-300">
+                          Today's Due • Tomorrow 11:00 AM
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-slate-900 font-bold text-sm sm:text-base mt-0.5">
                         <Calendar className="w-4 h-4 text-rose-600 shrink-0" />
-                        <span className="font-mono text-rose-950 font-black">Between Oct 23 & 11:00 AM on 24th</span>
+                        <span className="font-mono text-rose-950 font-black">Payment started today — Until 11:00 AM Tomorrow</span>
                       </div>
-                      <span className="text-[10.5px] text-slate-500 font-medium">
-                        Payment time for ₹17,000 is between October 23 and 11:00 AM on October 24, 2026.
+                      <span className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                        Payment has started from today (<strong>today's due</strong>). If not completed today, payment must be completed by <strong>11:00 AM tomorrow (October 24, 2026)</strong>.
                       </span>
+                      <div className="text-[10px] font-bold text-amber-900 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 mt-0.5">
+                        Note: This is the last chance, make the right decision and move forward.
+                      </div>
                     </div>
 
                     {/* Remaining Payment Date After Completion */}
