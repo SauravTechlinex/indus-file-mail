@@ -802,42 +802,46 @@ export default function App() {
         </div>
       </header>
 
-      {/* Top Global Payment Alert & Success Ticker (Right Below Header) */}
+      {/* Top Global Payment Alert Ticker (Right Below Header) */}
       {isLoggedIn && !isContractCancelled && tierInstallmentStage === 'advance_paid' && (
-        <div className="w-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg border-b-2 border-emerald-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-20">
+        <div className="w-full bg-gradient-to-r from-black via-rose-950 to-black text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg border-b-2 border-rose-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-20">
           <div className="flex items-start sm:items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/25 border border-emerald-400/50 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 shadow-sm">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <div className="w-9 h-9 rounded-xl bg-rose-600/30 border border-rose-500/50 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 animate-pulse">
+              <AlertTriangle className="w-5 h-5 text-rose-300" />
             </div>
             <div className="flex flex-col gap-1.5 text-left">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-xs shrink-0 flex items-center gap-1.5">
-                  <Check className="w-3 h-3 stroke-[3]" />
-                  Payment Successful
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs shrink-0 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                  Payment Due
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-500/40 shadow-xs shrink-0 font-mono">
-                  UPI Cleared
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-black shadow-xs shrink-0 font-mono">
+                  Part 2: ₹1,00,000 Due
                 </span>
-                <span className="text-xs font-semibold text-emerald-200">
-                  Paid by: <strong className="text-white font-bold">Saurav Biswas</strong> • Method: <strong className="text-white font-bold">UPI</strong> • Time: <strong className="text-emerald-300 font-bold">9.55 am 24th October</strong>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-900/80 text-rose-200 border border-rose-500/50 shadow-xs shrink-0">
+                  Deadline: 2 November 2026, on or before 11:00 AM
                 </span>
-                <span className="text-[11px] font-mono text-emerald-300/90 bg-emerald-900/50 px-2 py-0.5 rounded border border-emerald-700/60 font-bold">
-                  Txn ID: {tierAdvancePaidId}
+                <span className="text-[11px] font-semibold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-600/40">
+                  Part 1 Advance (₹17,000) Completed Earlier
                 </span>
               </div>
-              <p className="text-xs text-emerald-100/95 font-medium leading-relaxed">
-                The user <strong>Saurav Biswas</strong> has made the advance payment of <strong className="text-white font-black">₹17,000</strong> successfully through <strong>UPI</strong>. Tier 2 Agreement is activated. Remaining balance of <strong className="text-white font-black">₹1,00,000</strong> is scheduled for November 2, 2026.
+              <p className="text-xs text-rose-100/95 font-medium leading-relaxed">
+                Earlier, the advance payment of <strong className="text-emerald-300 font-bold">₹17,000</strong> was completed. Now, the remaining balance payment of <strong className="text-white font-black underline decoration-amber-400">₹1,00,000 (1 Lakh)</strong> is due. Payment must be made on or before <strong className="text-amber-300 font-black">11:00 AM, 2 November 2026</strong>.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
             <button
               type="button"
-              onClick={() => navigateTo('payments', 'info')}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
+              onClick={() => {
+                setTierInstallmentChoice('remaining');
+                setShowTierPaymentModal(true);
+              }}
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-rose-600 via-amber-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
             >
-              <Receipt className="w-3.5 h-3.5" />
-              <span>View Payment Info Page</span>
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Pay Remaining ₹1,00,000</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -1248,49 +1252,51 @@ export default function App() {
                   )}
 
                   {!isContractCancelled && !showOpeningSchedule && tierInstallmentStage === 'advance_paid' && (
-                    <div className="bg-gradient-to-r from-emerald-50/95 via-teal-50/95 to-slate-50/90 backdrop-blur border-2 border-emerald-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-gradient-to-r from-amber-50/95 via-rose-50/90 to-purple-50/95 backdrop-blur border-2 border-amber-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="flex items-start gap-3.5">
-                        <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0 shadow-sm mt-0.5">
-                          <CheckCircle2 className="w-5 h-5 text-white" />
+                        <div className="p-2.5 rounded-xl bg-amber-500 text-white shrink-0 shadow-sm mt-0.5">
+                          <Clock className="w-5 h-5 stroke-[2.5]" />
                         </div>
                         <div className="flex flex-col gap-1 text-xs">
                           <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                            <span className="font-black uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] tracking-wider border border-emerald-300 flex items-center gap-1">
-                              <Check className="w-3.5 h-3.5 stroke-[3]" />
-                              Payment Successful • Advance Cleared
+                            <span className="font-black uppercase px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] tracking-wider border border-rose-300 flex items-center gap-1">
+                              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 stroke-[3]" />
+                              Part 2 Payment Due: ₹1,00,000
                             </span>
-                            <span className="font-mono text-slate-500 text-[11px]">Bank Txn ID: {tierAdvancePaidId}</span>
-                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 text-[10px] font-black tracking-wide border border-purple-200">
-                              Tier 2 Activated
+                            <span className="font-mono text-emerald-800 bg-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300">
+                              Part 1 Advance (₹17,000) Cleared Earlier
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-black tracking-wide border border-amber-300">
+                              Deadline: 2 Nov 2026, 11:00 AM
                             </span>
                           </div>
                           <span className="font-bold text-sm sm:text-base text-slate-900">
-                            The user Saurav Biswas has made the payment of <span className="text-emerald-700 font-mono font-black">₹17,000</span> via UPI
+                            Remaining Balance Payment of <span className="text-rose-600 font-mono font-black">₹1,00,000 (1 Lakh)</span> is Due
                           </span>
                           <p className="text-slate-600 leading-relaxed font-medium mt-0.5">
-                            Payment completed at <strong>9.55 am 24th October</strong> through UPI (Bank Txn ID: <code className="font-mono font-bold text-slate-800">{tierAdvancePaidId}</code>). Tier 2 agreement is active. Remaining balance: <strong className="text-slate-900 font-bold">₹1,00,000 (1 Lakh)</strong> scheduled for November 2, 2026.
+                            Earlier, the ₹17,000 payment was completed. The user now has to make the remaining payment of <strong>₹1,00,000</strong>, which should be made <strong>on or before 11:00 AM, 2 November 2026</strong>.
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 self-start md:self-auto flex-wrap">
                         <button
                           type="button"
-                          onClick={() => navigateTo('payments', 'info')}
-                          className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
-                        >
-                          <Receipt className="w-4 h-4" />
-                          <span>View Payment Info Page</span>
-                        </button>
-                        <button
-                          type="button"
                           onClick={() => {
                             setTierInstallmentChoice('remaining');
                             setShowTierPaymentModal(true);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md shadow-purple-600/30 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+                          className="px-5 py-3 rounded-xl bg-gradient-to-r from-rose-600 via-amber-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-extrabold text-xs shadow-md shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
                         >
                           <CreditCard className="w-4 h-4 shrink-0" />
                           <span>Pay Remaining ₹1,00,000</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => navigateTo('payments', 'info')}
+                          className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-white text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+                        >
+                          <Receipt className="w-4 h-4" />
+                          <span>View Payment Info</span>
                         </button>
                       </div>
                     </div>
@@ -2417,9 +2423,9 @@ export default function App() {
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Payment Status & Overview</span>
                               {tierInstallmentStage === 'advance_paid' ? (
-                                <div className="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-emerald-200">
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                  Payment Successful • UPI Cleared
+                                <div className="px-3 py-1 bg-amber-50 text-amber-900 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-300">
+                                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                                  Part 2 Payment Due • ₹1,00,000 Due on or before 11:00 AM, 2 Nov 2026
                                 </div>
                               ) : tierInstallmentStage === 'fully_paid' ? (
                                 <div className="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm border border-emerald-200">
@@ -2442,159 +2448,90 @@ export default function App() {
                                   All Tier 2 Upgrade Payments Completed & Settled.
                                 </div>
                               ) : tierInstallmentStage === 'advance_paid' ? (
-                                <div className="bg-gradient-to-br from-emerald-50/95 via-white to-teal-50/70 p-5 sm:p-7 rounded-3xl border-2 border-emerald-300 shadow-md flex flex-col gap-5 animate-in fade-in slide-in-from-top-2">
-                                  {/* Success Header with Badges */}
-                                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-200/80 pb-5">
+                                <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50/70 p-5 sm:p-7 rounded-3xl border-2 border-amber-300 shadow-md flex flex-col gap-5 animate-in fade-in slide-in-from-top-2">
+                                  {/* Header with Due Badges */}
+                                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-200/80 pb-5">
                                     <div className="flex items-start gap-3.5">
-                                      <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-600/30 mt-0.5 shrink-0">
-                                        <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+                                      <div className="p-3 rounded-2xl bg-amber-500 text-white shadow-md shadow-amber-500/30 mt-0.5 shrink-0">
+                                        <Clock className="w-6 h-6 stroke-[2.5]" />
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1 shadow-2xs">
-                                            <Check className="w-3 h-3 stroke-[3]" />
-                                            Payment Successful
+                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1 shadow-2xs">
+                                            <AlertTriangle className="w-3 h-3 text-rose-600 stroke-[3]" />
+                                            Part 2 Payment Due
                                           </span>
-                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-300 shadow-2xs">
-                                            Tier 2 Activated
+                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                                            Deadline: 2 Nov 2026, on or before 11:00 AM
                                           </span>
-                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-900 border border-blue-300 font-mono shadow-2xs">
-                                            UPI Cleared
+                                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono shadow-2xs">
+                                            Advance ₹17,000 Cleared Earlier
                                           </span>
                                         </div>
                                         <h4 className="text-base sm:text-xl font-bold text-slate-900 tracking-tight">
-                                          Payment Successful • Advance Cleared & Tier 2 Activated
+                                          Remaining Balance Payment Due • ₹1,00,000 (1 Lakh)
                                         </h4>
                                         <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                                          The user <strong className="text-slate-900 font-bold">Saurav Biswas</strong> has made the payment successfully. Part 1 advance of <strong className="text-emerald-700 font-bold">₹17,000</strong> has been cleared by Indus Treasury and your Tier 2 institutional agreement is now operational.
+                                          Earlier, the ₹17,000 advance payment was made and completed. The user now has to pay the remaining balance of <strong className="text-rose-700 font-bold">₹1,00,000</strong>, which should be made <strong className="text-slate-900 font-bold">on or before 11:00 AM, 2 November 2026</strong>.
                                         </p>
                                       </div>
                                     </div>
 
-                                    <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1 bg-white/90 sm:bg-transparent p-3 sm:p-0 rounded-2xl border sm:border-0 border-emerald-200/80">
+                                    <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1 bg-white/90 sm:bg-transparent p-3 sm:p-0 rounded-2xl border sm:border-0 border-amber-200/80">
                                       <span className="text-[10px] uppercase font-extrabold text-slate-400 block tracking-wider">
-                                        Remaining Amount Left
+                                        Remaining Amount Due
                                       </span>
-                                      <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
+                                      <span className="text-2xl sm:text-3xl font-black text-rose-600 font-mono">
                                         ₹1,00,000
                                       </span>
-                                      <span className="text-[10px] text-emerald-800 font-bold flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3" />
-                                        Advance Cleared: ₹17,000
+                                      <span className="text-[10px] text-amber-900 font-bold flex items-center gap-1">
+                                        <Clock className="w-3 h-3 text-amber-700" />
+                                        Due: 02-11-2026 (11:00 AM)
                                       </span>
                                     </div>
                                   </div>
 
-                                  {/* OFFICIAL PAYMENT INFO RECEIPT CARD (Saurav Biswas, UPI, Bank Txn ID, Time 9.55 am 24th October) */}
-                                  <div className="p-4 sm:p-5 bg-white rounded-2xl border-2 border-emerald-200/90 shadow-sm flex flex-col gap-4">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
-                                      <div className="flex items-center gap-2">
-                                        <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                                          <Receipt className="w-4 h-4" />
+                                  {/* Urgent Notice Banner */}
+                                  <div className="p-3.5 bg-gradient-to-r from-rose-50 via-amber-50/80 to-rose-50 rounded-2xl border-2 border-rose-300 flex items-start gap-3 text-xs text-rose-950 shadow-xs">
+                                    <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                                    <div className="flex flex-col gap-1 w-full">
+                                      <div className="flex items-center justify-between flex-wrap gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                                            PAYMENT NOTICE
+                                          </span>
+                                          <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                                            Part 2 Balance Payment Due (₹1,00,000)
+                                          </strong>
                                         </div>
-                                        <div>
-                                          <div className="text-xs font-black uppercase tracking-wider text-slate-800">
-                                            Official Payment Information & Transaction Receipt
-                                          </div>
-                                          <div className="text-[11px] text-slate-500">
-                                            Cryptographically verified by Indus Treasury & Banking Gateway
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
-                                        <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-600" />
-                                        Status: Settled (Success)
-                                      </span>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                                      {/* Field 1: User / Paid by */}
-                                      <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                                        <span className="text-slate-400 block text-[9.5px] uppercase font-extrabold tracking-wider">
-                                          User / Paid By
-                                        </span>
-                                        <span className="text-sm font-bold text-slate-900 block mt-0.5">
-                                          Saurav Biswas
-                                        </span>
-                                        <span className="text-[10px] text-emerald-700 font-semibold block mt-0.5">
-                                          The user has made payment
+                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                          Payment Date: 2 November 2026 (on or before 11:00 AM)
                                         </span>
                                       </div>
-
-                                      {/* Field 2: Payment Method */}
-                                      <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                                        <span className="text-slate-400 block text-[9.5px] uppercase font-extrabold tracking-wider">
-                                          Payment Method
-                                        </span>
-                                        <span className="text-sm font-bold text-purple-900 block mt-0.5 flex items-center gap-1">
-                                          <QrCode className="w-3.5 h-3.5 text-purple-600" />
-                                          UPI
-                                        </span>
-                                        <span className="text-[10px] text-slate-500 block mt-0.5">
-                                          Instant Gateway Clearance
-                                        </span>
-                                      </div>
-
-                                      {/* Field 3: Bank Transaction ID */}
-                                      <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                                        <span className="text-slate-400 block text-[9.5px] uppercase font-extrabold tracking-wider">
-                                          Bank Transaction ID
-                                        </span>
-                                        <span className="text-xs font-mono font-bold text-slate-900 block mt-0.5 select-all">
-                                          UPI/629841059284/YESB
-                                        </span>
-                                        <span className="text-[10px] text-slate-500 font-mono block mt-0.5">
-                                          Bank UTR: 629841059284
-                                        </span>
-                                      </div>
-
-                                      {/* Field 4: Payment Time */}
-                                      <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                                        <span className="text-slate-400 block text-[9.5px] uppercase font-extrabold tracking-wider">
-                                          Payment Time
-                                        </span>
-                                        <span className="text-xs font-bold text-amber-950 block mt-0.5 flex items-center gap-1">
-                                          <Clock className="w-3.5 h-3.5 text-amber-600" />
-                                          9.55 am 24th October
-                                        </span>
-                                        <span className="text-[10px] text-slate-500 block mt-0.5">
-                                          Timestamp Verified
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Confirmation Summary Banner */}
-                                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                                      <div className="flex items-center gap-2">
-                                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                                        <span className="font-medium">
-                                          Advance clearance confirmed for <strong>Saurav Biswas</strong>. Part 1 amount of <strong>₹17,000</strong> settled via <strong>UPI</strong> at <strong>9.55 am 24th October</strong>.
-                                        </span>
-                                      </div>
-                                      <span className="text-[11px] font-mono text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-300 font-bold shrink-0">
-                                        Ref: {upgradeTrackingCode}
-                                      </span>
+                                      <p className="text-rose-800 font-medium text-[11.5px] leading-relaxed">
+                                        Earlier, 17,000 payment has been made and completed. Now the user has to show that the <strong>₹1,00,000</strong> payment is due, which payment date is <strong>2 November 2026 on or before 11:00 AM</strong>.
+                                      </p>
                                     </div>
                                   </div>
 
                                   {/* Schedule Breakdown Cards */}
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                    {/* Part 1: Advance Cleared */}
+                                    {/* Part 1: Advance Cleared Earlier */}
                                     <div className="p-4 rounded-2xl border-2 flex flex-col justify-between gap-3 bg-emerald-50/60 border-emerald-300 shadow-2xs">
                                       <div className="flex items-start justify-between gap-2">
                                         <div>
                                           <div className="flex items-center gap-1.5 mb-1">
                                             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700">
-                                              Part 1 • Completed & Cleared
+                                              Part 1 • Completed Earlier
                                             </span>
                                           </div>
                                           <div className="text-sm font-bold text-slate-900">Advance Activation Payment</div>
                                           <div className="text-xs text-slate-600 mt-1 leading-relaxed">
-                                            The user <strong>Saurav Biswas</strong> made the payment through <strong>UPI</strong> at <strong>9.55 am 24th October</strong>.
+                                            Earlier, the first ₹17,000 payment was completed by <strong>Saurav Biswas</strong> through <strong>UPI</strong>.
                                           </div>
                                           <div className="mt-2 text-[11px] font-mono text-emerald-900 bg-emerald-100/90 px-2.5 py-1.5 rounded-lg border border-emerald-200 font-semibold space-y-0.5">
                                             <div>Bank Txn ID: <strong className="text-emerald-950">UPI/629841059284/YESB</strong></div>
-                                            <div>Paid Time: <strong className="text-emerald-950">9.55 am 24th October</strong></div>
+                                            <div>Cleared Earlier: <strong className="text-emerald-950">₹17,000 (Advance Done)</strong></div>
                                           </div>
                                         </div>
                                         <span className="text-lg font-black font-mono shrink-0 text-emerald-700">
@@ -2604,26 +2541,29 @@ export default function App() {
 
                                       <div className="text-xs font-bold text-emerald-800 bg-emerald-100 py-1.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-emerald-300">
                                         <Check className="w-4 h-4 stroke-[3]" />
-                                        Advance Paid & Verified
+                                        Advance Completed Earlier
                                       </div>
                                     </div>
 
-                                    {/* Part 2: Remaining Balance */}
-                                    <div className="p-4 rounded-2xl border-2 flex flex-col justify-between gap-3 bg-white border-purple-300 shadow-xs ring-2 ring-purple-600/10">
+                                    {/* Part 2: Remaining Balance Due */}
+                                    <div className="p-4 rounded-2xl border-2 flex flex-col justify-between gap-3 bg-white border-rose-400 shadow-xs ring-2 ring-rose-500/15">
                                       <div className="flex items-start justify-between gap-2">
                                         <div>
-                                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-900 block mb-1">
-                                            Part 2 • Remaining Balance (Due Post-Advance)
-                                          </span>
-                                          <div className="text-sm font-bold text-slate-900">Remaining Balance Payment</div>
-                                          <div className="text-xs text-slate-500 mt-0.5">
-                                            Schedule Date: <strong>02-11-2026</strong> (Post-Advance Activation)
+                                          <div className="flex items-center gap-1.5 mb-1">
+                                            <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-rose-700">
+                                              Part 2 • Remaining Balance (Due Now)
+                                            </span>
                                           </div>
-                                          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                                            Remaining 1 Lakh to complete final settlement after the first ₹17,000 advance cleared.
+                                          <div className="text-sm font-bold text-slate-900">Remaining Balance Payment</div>
+                                          <div className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                                            Payment Date: <strong className="text-rose-700">2 November 2026</strong> (must be made <strong className="text-rose-950">on or before 11:00 AM</strong>).
+                                          </div>
+                                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                            Remaining 1 Lakh balance to complete final contract settlement after the advance was completed earlier.
                                           </p>
                                         </div>
-                                        <span className="text-lg font-black text-slate-900 font-mono">₹1,00,000</span>
+                                        <span className="text-lg font-black text-rose-600 font-mono">₹1,00,000</span>
                                       </div>
 
                                       <button
@@ -2632,10 +2572,10 @@ export default function App() {
                                           setTierInstallmentChoice('remaining');
                                           setShowTierPaymentModal(true);
                                         }}
-                                        className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 via-amber-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-xs shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                                       >
                                         <CreditCard className="w-3.5 h-3.5" />
-                                        <span>Pay Remaining ₹1,00,000</span>
+                                        <span>Pay Remaining ₹1,00,000 Now</span>
                                         <ArrowRight className="w-3.5 h-3.5" />
                                       </button>
                                     </div>
@@ -2802,24 +2742,24 @@ export default function App() {
 
                                 {/* Payment Banner (Confirmed / Notice) */}
                                 {tierInstallmentStage === 'advance_paid' ? (
-                                  <div className="p-3.5 bg-gradient-to-r from-emerald-50 via-teal-50/80 to-emerald-50 border-2 border-emerald-300 rounded-2xl flex items-start gap-3 shadow-xs">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                                    <div className="flex flex-col gap-1 text-xs text-emerald-950 flex-1">
+                                  <div className="p-3.5 bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 border-2 border-amber-300 rounded-2xl flex items-start gap-3 shadow-xs">
+                                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                                    <div className="flex flex-col gap-1 text-xs text-slate-900 flex-1">
                                       <div className="flex items-center justify-between flex-wrap gap-2">
                                         <div className="flex items-center gap-2">
-                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-2xs">
-                                            PAYMENT CONFIRMED
+                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-2xs">
+                                            PAYMENT NOTICE
                                           </span>
-                                          <strong className="text-emerald-950 font-bold text-xs sm:text-sm">
-                                            Payment Successful — Advance Cleared via UPI
+                                          <strong className="text-rose-950 font-bold text-xs sm:text-sm">
+                                            Part 2 Due: Remaining ₹1,00,000 Payment
                                           </strong>
                                         </div>
-                                        <span className="text-[10px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                                          Time: 9.55 am 24th October
+                                        <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                                          Deadline: 2 November 2026, on or before 11:00 AM
                                         </span>
                                       </div>
-                                      <p className="text-emerald-800 font-medium text-[11.5px] leading-relaxed">
-                                        The user <strong>Saurav Biswas</strong> has made the advance payment of <strong>₹17,000</strong> through <strong>UPI</strong>. Bank Transaction ID: <strong className="font-mono text-emerald-950 bg-emerald-100/70 px-1.5 py-0.5 rounded">UPI/629841059284/YESB</strong>. Payment time: <strong>9.55 am 24th October</strong>. Tier 2 Agreement is formally activated.
+                                      <p className="text-slate-700 font-medium text-[11.5px] leading-relaxed">
+                                        Earlier, the ₹17,000 payment has been made and completed. The user now has to make the remaining payment of <strong>₹1,00,000</strong>, which should be made <strong>on or before 11:00 AM, 2 November 2026</strong>.
                                       </p>
                                     </div>
                                   </div>
@@ -2927,7 +2867,7 @@ export default function App() {
                                     ) : (
                                       <div className="text-[11px] font-mono text-emerald-900 font-semibold bg-emerald-100/80 p-2.5 rounded-xl border border-emerald-200 space-y-0.5">
                                         <div>Receipt Ref: <strong>{tierAdvancePaidId}</strong></div>
-                                        <div className="text-[10px] text-emerald-800 font-sans">Paid by: <strong>Saurav Biswas</strong> via <strong>UPI</strong> at <strong>9.55 am 24th October</strong></div>
+                                        <div className="text-[10px] text-emerald-800 font-sans">Earlier: <strong>₹17,000 Paid via UPI</strong> (Completed)</div>
                                       </div>
                                     )}
                                   </div>
@@ -2951,8 +2891,8 @@ export default function App() {
                                             Fully Settled
                                           </span>
                                         ) : tierInstallmentStage === 'advance_paid' ? (
-                                          <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 text-[10px] font-extrabold border border-purple-300">
-                                            Due Now
+                                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-black border border-rose-300">
+                                            Due on or before 11:00 AM, 2 Nov 2026
                                           </span>
                                         ) : (
                                           <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-600 text-[10px] font-medium">
@@ -2962,7 +2902,7 @@ export default function App() {
                                       </div>
                                       <div className="text-2xl font-black text-slate-900 font-mono">₹1,00,000 <span className="text-xs font-normal text-slate-500">(1 Lakh)</span></div>
                                       <p className="text-[11px] text-slate-600 mt-1 leading-snug">
-                                        Remaining 1 Lakh to be paid after the first ₹17,000 advance payment activates the contract.
+                                        Earlier, 17,000 payment was completed. The remaining 1 Lakh balance is due and must be made <strong>on or before 11:00 AM, 2 November 2026</strong>.
                                       </p>
                                     </div>
 
