@@ -202,9 +202,9 @@ export default function App() {
   const [tierPaymentMethod, setTierPaymentMethod] = useState<'upi' | 'netbanking' | 'neft' | 'card'>('upi');
   const [isProcessingTierPayment, setIsProcessingTierPayment] = useState(false);
   const [tierInstallmentChoice, setTierInstallmentChoice] = useState<'advance' | 'remaining' | 'full'>('remaining');
-  const [tierInstallmentStage, setTierInstallmentStage] = useState<'advance_due' | 'advance_paid' | 'fully_paid'>('advance_paid');
+  const [tierInstallmentStage, setTierInstallmentStage] = useState<'advance_due' | 'advance_paid' | 'fully_paid'>('fully_paid');
   const [tierAdvancePaidId, setTierAdvancePaidId] = useState<string | null>('UPI/629841059284/YESB');
-  const [tierFinalPaidId, setTierFinalPaidId] = useState<string | null>(null);
+  const [tierFinalPaidId, setTierFinalPaidId] = useState<string | null>('NEFT/SBIN0000042/849201948102');
   const [showTierUpgradeModal, setShowTierUpgradeModal] = useState(false);
   const [showTierRequestModal, setShowTierRequestModal] = useState(false);
   const [isTierAgreementChecked, setIsTierAgreementChecked] = useState(true);
@@ -802,7 +802,49 @@ export default function App() {
         </div>
       </header>
 
-      {/* Top Global Payment Alert Ticker (Right Below Header) */}
+      {/* Top Global Payment Alert & Success Ticker (Right Below Header) */}
+      {isLoggedIn && !isContractCancelled && tierInstallmentStage === 'fully_paid' && (
+        <div className="w-full bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg border-b-2 border-emerald-500 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-20 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/25 border border-emerald-400/50 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 shadow-sm">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div className="flex flex-col gap-1.5 text-left">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-xs shrink-0 flex items-center gap-1.5">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                  Payment Successful
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400 text-black shadow-xs shrink-0 font-mono">
+                  Payment Advanced
+                </span>
+                <span className="text-xs font-semibold text-emerald-200">
+                  Method: <strong className="text-white font-bold">NEFT SBI Branch Bangaon</strong> • Time: <strong className="text-emerald-300 font-bold">1.39 pm 30 October</strong>
+                </span>
+                <span className="text-[11px] font-mono text-emerald-300/90 bg-emerald-900/50 px-2 py-0.5 rounded border border-emerald-700/60 font-bold">
+                  Txn ID: {tierFinalPaidId}
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-900/80 text-blue-200 border border-blue-500/50 shadow-xs shrink-0">
+                  Process Time: 2 November
+                </span>
+              </div>
+              <p className="text-xs text-emerald-100/95 font-medium leading-relaxed">
+                The user has made the remaining payment of <strong className="text-white font-black">₹1,00,000</strong>. Payment method is <strong className="text-white font-bold">NEFT SBI Branch Bangaon</strong> (Transaction ID: <strong className="font-mono text-emerald-300">{tierFinalPaidId}</strong>), time: <strong className="text-white font-bold">1.39 pm 30 October</strong>. The payment has been advanced, the payment was successful, and the process time is <strong className="text-amber-300 font-bold">2 November</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
+            <button
+              type="button"
+              onClick={() => navigateTo('payments', 'info')}
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
+            >
+              <Receipt className="w-3.5 h-3.5" />
+              <span>View Payment Info Page</span>
+            </button>
+          </div>
+        </div>
+      )}
       {isLoggedIn && !isContractCancelled && tierInstallmentStage === 'advance_paid' && (
         <div className="w-full bg-gradient-to-r from-black via-rose-950 to-black text-white px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg border-b-2 border-rose-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 relative z-20">
           <div className="flex items-start sm:items-center gap-3">
@@ -1246,6 +1288,52 @@ export default function App() {
                         >
                           <Zap className="w-4 h-4 text-amber-300 shrink-0" />
                           <span>Pay Advance ₹17,000 to Activate</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isContractCancelled && !showOpeningSchedule && tierInstallmentStage === 'fully_paid' && (
+                    <div className="bg-gradient-to-r from-emerald-50/95 via-teal-50/95 to-slate-50/90 backdrop-blur border-2 border-emerald-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                      <div className="flex items-start gap-3.5">
+                        <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0 shadow-sm mt-0.5">
+                          <CheckCircle2 className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex flex-col gap-1 text-xs">
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <span className="font-black uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] tracking-wider border border-emerald-300 flex items-center gap-1">
+                              <Check className="w-3.5 h-3.5 stroke-[3]" />
+                              Payment Successful • Full Settlement
+                            </span>
+                            <span className="font-mono text-emerald-900 bg-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300">
+                              Method: NEFT SBI Branch Bangaon
+                            </span>
+                            <span className="font-mono text-slate-700 bg-white text-[10px] font-bold px-2 py-0.5 rounded border border-slate-200">
+                              Txn ID: {tierFinalPaidId}
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-black tracking-wide border border-amber-300">
+                              Payment Advanced
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-black tracking-wide border border-blue-300">
+                              Process Time: 2 November
+                            </span>
+                          </div>
+                          <span className="font-bold text-sm sm:text-base text-slate-900">
+                            Remaining Payment of <span className="text-emerald-700 font-mono font-black">₹1,00,000 (1 Lakh)</span> Successfully Settled
+                          </span>
+                          <p className="text-slate-600 leading-relaxed font-medium mt-0.5">
+                            The user has made the remaining payment via <strong>NEFT SBI Branch Bangaon</strong> (Transaction ID: <code className="font-mono font-bold text-slate-800">{tierFinalPaidId}</code>) at <strong>1.39 pm 30 October</strong>. The payment has been advanced, the payment was successful, and the process time is <strong>2 November</strong>. All contractual financial requirements have been completed.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 self-start md:self-auto flex-wrap">
+                        <button
+                          type="button"
+                          onClick={() => navigateTo('payments', 'info')}
+                          className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+                        >
+                          <Receipt className="w-4 h-4" />
+                          <span>View Payment Info Page</span>
                         </button>
                       </div>
                     </div>
@@ -2717,7 +2805,37 @@ export default function App() {
                                 </div>
 
                                 {/* Payment Banner (Confirmed / Notice) */}
-                                {tierInstallmentStage === 'advance_paid' ? (
+                                {tierInstallmentStage === 'fully_paid' ? (
+                                  <div className="p-3.5 bg-gradient-to-r from-emerald-50 via-teal-50/80 to-emerald-50 border-2 border-emerald-300 rounded-2xl flex items-start gap-3 shadow-xs">
+                                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                                    <div className="flex flex-col gap-1 text-xs text-emerald-950 flex-1">
+                                      <div className="flex items-center justify-between flex-wrap gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-2xs">
+                                            PAYMENT CONFIRMED
+                                          </span>
+                                          <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-500 text-white shadow-2xs">
+                                            PAYMENT ADVANCED
+                                          </span>
+                                          <strong className="text-emerald-950 font-bold text-xs sm:text-sm">
+                                            Payment Successful — Remaining ₹1,00,000 Cleared via NEFT SBI Branch Bangaon
+                                          </strong>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded border border-blue-300">
+                                            Process Time: 2 November
+                                          </span>
+                                          <span className="text-[10px] font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                                            Time: 1.39 pm 30 October
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-emerald-800 font-medium text-[11.5px] leading-relaxed">
+                                        The user has made the remaining payment of <strong>₹1,00,000</strong>. Payment method: <strong>NEFT SBI Branch Bangaon</strong>. Bank Transaction ID: <strong className="font-mono text-emerald-950 bg-emerald-100/90 px-1.5 py-0.5 rounded border border-emerald-300">{tierFinalPaidId}</strong>. Payment time: <strong>1.39 pm 30 October</strong>. The payment has been advanced, the payment was successful, and the process time is <strong>2 November</strong>. Tier 2 Agreement is fully activated.
+                                      </p>
+                                    </div>
+                                  </div>
+                                ) : tierInstallmentStage === 'advance_paid' ? (
                                   <div className="p-3.5 bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 border-2 border-amber-300 rounded-2xl flex items-start gap-3 shadow-xs">
                                     <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                                     <div className="flex flex-col gap-1 text-xs text-slate-900 flex-1">
@@ -2792,33 +2910,72 @@ export default function App() {
                                   </div>
                                 </div>
 
-                                  {/* Single Payment Box (Removed redundant Part 1 box; only active ₹1,00,000 box displayed) */}
+                                  {/* Single Payment Box (Active settlement state) */}
                                   <div className="pt-1">
-                                    <div className="p-4 sm:p-5 rounded-2xl border-2 border-purple-300 bg-white shadow-xs ring-2 ring-purple-600/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className={`p-4 sm:p-5 rounded-2xl border-2 flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                                      tierInstallmentStage === 'fully_paid'
+                                        ? 'border-emerald-300 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/15'
+                                        : 'border-purple-300 bg-white shadow-xs ring-2 ring-purple-600/10'
+                                    }`}>
                                       <div>
                                         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-900 bg-purple-100 px-2 py-0.5 rounded border border-purple-200">
+                                          <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                                            tierInstallmentStage === 'fully_paid'
+                                              ? 'text-emerald-900 bg-emerald-100 border-emerald-300'
+                                              : 'text-purple-900 bg-purple-100 border-purple-200'
+                                          }`}>
                                             Part 2: Remaining Contract Balance
                                           </span>
-                                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-black border border-rose-300">
-                                            Due on or before 11:00 AM, 2 Nov 2026
-                                          </span>
+                                          {tierInstallmentStage === 'fully_paid' ? (
+                                            <>
+                                              <span className="px-2 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-black flex items-center gap-1 shadow-2xs">
+                                                <Check className="w-3 h-3 stroke-[3]" />
+                                                Payment Successful • Fully Paid
+                                              </span>
+                                              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-black border border-amber-300">
+                                                Payment Advanced
+                                              </span>
+                                              <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-black border border-blue-300">
+                                                Process Time: 2 November
+                                              </span>
+                                            </>
+                                          ) : (
+                                            <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-black border border-rose-300">
+                                              Due on or before 11:00 AM, 2 Nov 2026
+                                            </span>
+                                          )}
                                           <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                                             ₹17,000 Advance Completed Earlier
                                           </span>
                                         </div>
                                         <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-                                          ₹1,00,000 <span className="text-xs font-normal text-slate-500">(1 Lakh)</span>
+                                          ₹1,00,000 <span className="text-xs font-normal text-slate-500">({tierInstallmentStage === 'fully_paid' ? 'Fully Settled' : '1 Lakh'})</span>
                                         </div>
-                                        <p className="text-[11.5px] text-slate-600 mt-1 max-w-xl leading-relaxed">
-                                          Earlier, 17,000 payment was completed. The remaining 1 Lakh balance is due and must be made <strong>on or before 11:00 AM, 2 November 2026</strong>.
-                                        </p>
+                                        {tierInstallmentStage === 'fully_paid' ? (
+                                          <div className="text-xs text-slate-700 mt-1 space-y-0.5 max-w-xl">
+                                            <div>
+                                              Payment Method: <strong className="text-slate-900">NEFT SBI Branch Bangaon</strong> • Payment Time: <strong className="text-emerald-900 font-bold">1.39 pm 30 October</strong>
+                                            </div>
+                                            <p className="text-[11.5px] text-slate-600 leading-relaxed">
+                                              The payment has been advanced, the payment was successful, and the process time is <strong>2 November</strong>. Bank Transaction ID: <strong className="font-mono text-emerald-950 bg-white px-1.5 py-0.5 rounded border border-emerald-200">{tierFinalPaidId}</strong>.
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <p className="text-[11.5px] text-slate-600 mt-1 max-w-xl leading-relaxed">
+                                            Earlier, 17,000 payment was completed. The remaining 1 Lakh balance is due and must be made <strong>on or before 11:00 AM, 2 November 2026</strong>.
+                                          </p>
+                                        )}
                                       </div>
 
                                       <div className="shrink-0 w-full md:w-auto">
                                         {tierInstallmentStage === 'fully_paid' ? (
-                                          <div className="text-[11px] font-mono text-emerald-800 font-semibold bg-emerald-100/70 p-2 rounded-lg">
-                                            Receipt Ref: {tierFinalPaidId}
+                                          <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs space-y-1 text-left sm:text-right">
+                                            <div className="text-[10px] uppercase font-bold text-slate-400">NEFT Transaction ID</div>
+                                            <div className="text-xs font-mono font-bold text-emerald-900">{tierFinalPaidId}</div>
+                                            <div className="text-[10.5px] text-emerald-700 font-semibold flex items-center justify-start sm:justify-end gap-1">
+                                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                              <span>Process Time: 2 November</span>
+                                            </div>
                                           </div>
                                         ) : (
                                           <button
@@ -2934,7 +3091,7 @@ export default function App() {
                               <div className="p-3 rounded-xl bg-indigo-900/40 border border-indigo-500/30 flex items-center gap-2.5 text-xs text-indigo-200">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                                 <span>
-                                  <strong>Workflow Sequence:</strong> Advance Cleared (₹17,000) &rarr; <strong className="text-white">Company Agreement (New RSPD Protocol - In Progress)</strong> &rarr; <strong className="text-amber-300">Court Agreement (Will start after company agreement)</strong>.
+                                  <strong>Workflow Sequence:</strong> Advance Cleared (₹17,000) &rarr; <strong className="text-emerald-300">Remaining Cleared via NEFT SBI Branch Bangaon (₹1,00,000 - Payment Advanced, Process Time: 2 Nov)</strong> &rarr; <strong className="text-white">Company Agreement (New RSPD Protocol - In Progress)</strong> &rarr; <strong className="text-amber-300">Court Agreement (Will start after company agreement)</strong>.
                                 </span>
                               </div>
                             </div>
@@ -2996,7 +3153,7 @@ export default function App() {
                                         </strong>
                                       </div>
                                       <p className="text-xs text-amber-900 leading-relaxed mt-0.5 font-medium">
-                                        The company is making an agreement according to the <strong>New RSPD Protocol</strong>. The court agreement will start after the company agreement is completed.
+                                        The company is making an agreement according to the <strong>New RSPD Protocol</strong>. The court agreement will start after the company agreement is completed. (Remaining payment of ₹1,00,000 has been advanced and completed via <strong>NEFT SBI Branch Bangaon</strong>; process time is <strong>2 November</strong>).
                                       </p>
                                     </div>
                                   </div>
@@ -3930,7 +4087,7 @@ export default function App() {
                                     </h4>
                                     <p className="text-xs text-slate-600 mt-1 leading-relaxed max-w-2xl">
                                       {tierInstallmentStage === 'fully_paid' ? (
-                                        <>Both the <strong>₹17,000 advance</strong> and the <strong>₹1,00,000 remaining balance</strong> have been verified under receipts <strong>{tierAdvancePaidId}</strong> and <strong>{tierFinalPaidId}</strong>. Your RSPD Protocol agreement with 5 to 10 years validity is 100% formalized.</>
+                                        <>Both the <strong>₹17,000 advance</strong> and the <strong>₹1,00,000 remaining balance</strong> have been verified under receipts <strong>{tierAdvancePaidId}</strong> and <strong>{tierFinalPaidId}</strong> (Method: <strong>NEFT SBI Branch Bangaon</strong>, Paid: <strong>1.39 pm 30 October</strong>, Payment Advanced, Process Time: <strong>2 November</strong>). Your RSPD Protocol agreement with 5 to 10 years validity is 100% formalized.</>
                                       ) : tierInstallmentStage === 'advance_paid' ? (
                                         <>Your first <strong>₹17,000 advance payment</strong> has cleared and Tier 2 is now operational. You can now settle the remaining <strong>1 Lakh (₹1,00,000)</strong> balance for complete clearance.</>
                                       ) : (
